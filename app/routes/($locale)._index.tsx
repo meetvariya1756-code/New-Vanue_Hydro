@@ -7,18 +7,15 @@ import {Suspense} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {getSeoMeta} from '@shopify/hydrogen';
 
-import {HomeHero3D} from '~/components/homepage/HomeHero3D';
-import {ProductShowcase3D} from '~/components/homepage/ProductShowcase3D';
-import {ParallaxBand} from '~/components/homepage/ParallaxBand';
+import {Hero} from '~/components/Hero';
+import {VanueGlamsSection} from '~/components/VanueGlamsSection';
+import {VanueGlamsBenefitsSection} from '~/components/VanueGlamsBenefitsSection';
 import {FeaturedCollections} from '~/components/FeaturedCollections';
+import {ProductSwimlane} from '~/components/ProductSwimlane';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
-import {
-  parseHomepageConfig,
-  type HomepageShopMetafields,
-} from '~/lib/homepage.server';
+import {getHeroPlaceholder} from '~/lib/placeholders';
 import {seoPayload} from '~/lib/seo.server';
 import {routeHeaders} from '~/data/cache';
-import type {ProductCardFragment} from 'storefrontapi.generated';
 
 export const headers = routeHeaders;
 
@@ -30,53 +27,106 @@ export async function loader(args: LoaderFunctionArgs) {
     params.locale &&
     params.locale.toLowerCase() !== `${language}-${country}`.toLowerCase()
   ) {
+    // If the locale URL param is defined, yet we still are on `EN-US`
+    // the the locale param must be invalid, send to the 404 page
     throw new Response(null, {status: 404});
   }
 
+  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
+
+  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
   return defer({...deferredData, ...criticalData});
 }
 
+/**
+ * Load data necessary for rendering content above the fold. This is the critical data
+ * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
+ */
 async function loadCriticalData({context, request}: LoaderFunctionArgs) {
   const [{shop, hero}] = await Promise.all([
     context.storefront.query(HOMEPAGE_SEO_QUERY, {
       variables: {handle: 'freestyle'},
     }),
+    // Add other queries here, so that they are loaded in parallel
   ]);
-
-  const homepageConfig = parseHomepageConfig(
-    shop as HomepageShopMetafields,
-    hero,
-  );
 
   return {
     shop,
-    homepageConfig,
+    primaryHero: hero,
     seo: seoPayload.home({url: request.url}),
   };
 }
 
+/**
+ * Load data for rendering content below the fold. This data is deferred and will be
+ * fetched after the initial page load. If it's unavailable, the page should still 200.
+ * Make sure to not throw any errors here, as it will cause the page to 500.
+ */
 function loadDeferredData({context}: LoaderFunctionArgs) {
   const {language, country} = context.storefront.i18n;
 
-  const featuredProducts = loadHomepageProducts(context, country, language);
+  const featuredProducts = context.storefront
+    .query(HOMEPAGE_FEATURED_PRODUCTS_QUERY, {
+      variables: {
+        /**
+         * Country and language properties are automatically injected
+         * into all queries. Passing them is unnecessary unless you
+         * want to override them from the following default:
+         */
+        country,
+        language,
+      },
+    })
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      // eslint-disable-next-line no-console
+      console.error(error);
+      return null;
+    });
 
   const secondaryHero = context.storefront
     .query(COLLECTION_HERO_QUERY, {
-      variables: {handle: 'backcountry', country, language},
+      variables: {
+        handle: 'backcountry',
+        country,
+        language,
+      },
     })
     .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      // eslint-disable-next-line no-console
       console.error(error);
       return null;
     });
 
   const featuredCollections = context.storefront
     .query(FEATURED_COLLECTIONS_QUERY, {
-      variables: {country, language},
+      variables: {
+        country,
+        language,
+      },
     })
     .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      // eslint-disable-next-line no-console
+      console.error(error);
+      return null;
+    });
+
+  const tertiaryHero = context.storefront
+    .query(COLLECTION_HERO_QUERY, {
+      variables: {
+        handle: 'winter-2022',
+        country,
+        language,
+      },
+    })
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      // eslint-disable-next-line no-console
       console.error(error);
       return null;
     });
@@ -85,44 +135,8 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
     featuredProducts,
     secondaryHero,
     featuredCollections,
+    tertiaryHero,
   };
-}
-
-async function loadHomepageProducts(
-  context: LoaderFunctionArgs['context'],
-  country: any,
-  language: any,
-) {
-  const {storefront} = context;
-
-  try {
-    const {shop} = await storefront.query(HOMEPAGE_SHOP_SETTINGS_QUERY, {
-      variables: {country, language},
-    });
-    const collectionHandle =
-      shop?.productsCollection?.value?.trim() || null;
-
-    if (collectionHandle) {
-      const result = await storefront.query(
-        HOMEPAGE_COLLECTION_PRODUCTS_QUERY,
-        {
-          variables: {handle: collectionHandle, country, language},
-        },
-      );
-      const nodes = result?.collection?.products?.nodes ?? [];
-      if (nodes.length) {
-        return {products: {nodes}};
-      }
-    }
-
-    const result = await storefront.query(HOMEPAGE_FEATURED_PRODUCTS_QUERY, {
-      variables: {country, language},
-    });
-    return result;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
 }
 
 export const meta = ({matches}: MetaArgs<typeof loader>) => {
@@ -130,39 +144,41 @@ export const meta = ({matches}: MetaArgs<typeof loader>) => {
 };
 
 export default function Homepage() {
-  const {homepageConfig, featuredProducts, secondaryHero, featuredCollections} =
-    useLoaderData<typeof loader>();
+  const {
+    primaryHero,
+    secondaryHero,
+    tertiaryHero,
+    featuredCollections,
+    featuredProducts,
+  } = useLoaderData<typeof loader>();
+
+  // TODO: skeletons vs placeholders
+  const skeletons = getHeroPlaceholder([{}, {}, {}]);
 
   return (
     <>
-      <HomeHero3D config={homepageConfig} />
+      {primaryHero && (
+        <Hero {...primaryHero} height="full" top loading="eager" />
+      )}
+      <VanueGlamsSection />
+      <VanueGlamsBenefitsSection />
 
       {featuredProducts && (
-        <Suspense
-          fallback={
-            <ProductShowcase3D
-              title={homepageConfig.productsTitle}
-              products={[]}
-              accentColor={homepageConfig.accentColor}
-            />
-          }
-        >
+        <Suspense>
           <Await resolve={featuredProducts}>
-            {(response: any) => {
-              const nodes =
-                response?.products?.nodes ??
-                response?.collection?.products?.nodes ??
-                [];
+            {(response) => {
+              if (
+                !response ||
+                !response?.products ||
+                !response?.products?.nodes
+              ) {
+                return <></>;
+              }
               return (
-                <ProductShowcase3D
-                  title={homepageConfig.productsTitle}
-                  products={nodes as ProductCardFragment[]}
-                  accentColor={homepageConfig.accentColor}
-                  viewAllLink={
-                    homepageConfig.productsCollectionHandle
-                      ? `/collections/${homepageConfig.productsCollectionHandle}`
-                      : '/collections/all'
-                  }
+                <ProductSwimlane
+                  products={response.products}
+                  title="Featured Products"
+                  count={4}
                 />
               );
             }}
@@ -171,22 +187,13 @@ export default function Homepage() {
       )}
 
       {secondaryHero && (
-        <Suspense>
+        <Suspense fallback={<Hero {...skeletons[1]} />}>
           <Await resolve={secondaryHero}>
             {(response) => {
-              if (!response?.hero) return null;
-              const imageUrl =
-                response.hero.spread?.reference &&
-                'image' in response.hero.spread.reference
-                  ? response.hero.spread.reference.image?.url
-                  : null;
-              return (
-                <ParallaxBand
-                  config={homepageConfig}
-                  imageUrl={imageUrl}
-                  handle={response.hero.handle}
-                />
-              );
+              if (!response || !response?.hero) {
+                return <></>;
+              }
+              return <Hero {...response.hero} />;
             }}
           </Await>
         </Suspense>
@@ -196,7 +203,13 @@ export default function Homepage() {
         <Suspense>
           <Await resolve={featuredCollections}>
             {(response) => {
-              if (!response?.collections?.nodes) return null;
+              if (
+                !response ||
+                !response?.collections ||
+                !response?.collections?.nodes
+              ) {
+                return <></>;
+              }
               return (
                 <FeaturedCollections
                   collections={response.collections}
@@ -207,64 +220,22 @@ export default function Homepage() {
           </Await>
         </Suspense>
       )}
+
+      {tertiaryHero && (
+        <Suspense fallback={<Hero {...skeletons[2]} />}>
+          <Await resolve={tertiaryHero}>
+            {(response) => {
+              if (!response || !response?.hero) {
+                return <></>;
+              }
+              return <Hero {...response.hero} />;
+            }}
+          </Await>
+        </Suspense>
+      )}
     </>
   );
 }
-
-const HOMEPAGE_SHOP_FRAGMENT = `#graphql
-  fragment HomepageShopSettings on Shop {
-    name
-    heading: metafield(namespace: "homepage", key: "heading") {
-      value
-    }
-    subheading: metafield(namespace: "homepage", key: "subheading") {
-      value
-    }
-    ctaText: metafield(namespace: "homepage", key: "cta_text") {
-      value
-    }
-    ctaLink: metafield(namespace: "homepage", key: "cta_link") {
-      value
-    }
-    bgColor: metafield(namespace: "homepage", key: "background_color") {
-      value
-    }
-    textColor: metafield(namespace: "homepage", key: "text_color") {
-      value
-    }
-    accentColor: metafield(namespace: "homepage", key: "accent_color") {
-      value
-    }
-    productsTitle: metafield(namespace: "homepage", key: "products_title") {
-      value
-    }
-    productsCollection: metafield(namespace: "homepage", key: "products_collection") {
-      value
-    }
-    backgroundImage: metafield(namespace: "homepage", key: "background_image") {
-      reference {
-        ... on MediaImage {
-          image {
-            url
-            altText
-            width
-            height
-          }
-        }
-      }
-    }
-  }
-` as const;
-
-const HOMEPAGE_SHOP_SETTINGS_QUERY = `#graphql
-  query homepageShopSettings($country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
-    shop {
-      ...HomepageShopSettings
-    }
-  }
-  ${HOMEPAGE_SHOP_FRAGMENT}
-` as const;
 
 const COLLECTION_CONTENT_FRAGMENT = `#graphql
   fragment CollectionContent on Collection {
@@ -302,11 +273,11 @@ const HOMEPAGE_SEO_QUERY = `#graphql
       ...CollectionContent
     }
     shop {
-      ...HomepageShopSettings
+      name
+      description
     }
   }
   ${COLLECTION_CONTENT_FRAGMENT}
-  ${HOMEPAGE_SHOP_FRAGMENT}
 ` as const;
 
 const COLLECTION_HERO_QUERY = `#graphql
@@ -319,10 +290,11 @@ const COLLECTION_HERO_QUERY = `#graphql
   ${COLLECTION_CONTENT_FRAGMENT}
 ` as const;
 
+// @see: https://shopify.dev/api/storefront/current/queries/products
 export const HOMEPAGE_FEATURED_PRODUCTS_QUERY = `#graphql
   query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode)
   @inContext(country: $country, language: $language) {
-    products(first: 12, sortKey: CREATED_AT, reverse: true) {
+    products(first: 8) {
       nodes {
         ...ProductCard
       }
@@ -331,27 +303,14 @@ export const HOMEPAGE_FEATURED_PRODUCTS_QUERY = `#graphql
   ${PRODUCT_CARD_FRAGMENT}
 ` as const;
 
-const HOMEPAGE_COLLECTION_PRODUCTS_QUERY = `#graphql
-  query homepageCollectionProducts(
-    $handle: String!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    collection(handle: $handle) {
-      products(first: 12, sortKey: CREATED, reverse: true) {
-        nodes {
-          ...ProductCard
-        }
-      }
-    }
-  }
-  ${PRODUCT_CARD_FRAGMENT}
-` as const;
-
+// @see: https://shopify.dev/api/storefront/current/queries/collections
 export const FEATURED_COLLECTIONS_QUERY = `#graphql
   query homepageFeaturedCollections($country: CountryCode, $language: LanguageCode)
   @inContext(country: $country, language: $language) {
-    collections(first: 4, sortKey: UPDATED_AT) {
+    collections(
+      first: 4,
+      sortKey: UPDATED_AT
+    ) {
       nodes {
         id
         title

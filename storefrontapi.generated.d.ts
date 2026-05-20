@@ -199,55 +199,6 @@ export type GetShopPrimaryDomainQuery = {
   shop: {primaryDomain: Pick<StorefrontAPI.Domain, 'url'>};
 };
 
-export type HomepageShopSettingsFragment = Pick<StorefrontAPI.Shop, 'name'> & {
-  heading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  subheading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  ctaText?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  ctaLink?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  bgColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  textColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  accentColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  productsTitle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-  productsCollection?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Metafield, 'value'>
-  >;
-  backgroundImage?: StorefrontAPI.Maybe<{
-    reference?: StorefrontAPI.Maybe<{
-      image?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-      >;
-    }>;
-  }>;
-};
-
-export type HomepageShopSettingsQueryVariables = StorefrontAPI.Exact<{
-  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
-  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-}>;
-
-export type HomepageShopSettingsQuery = {
-  shop: Pick<StorefrontAPI.Shop, 'name'> & {
-    heading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    subheading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    ctaText?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    ctaLink?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    bgColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    textColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    accentColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    productsTitle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    productsCollection?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.Metafield, 'value'>
-    >;
-    backgroundImage?: StorefrontAPI.Maybe<{
-      reference?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-        >;
-      }>;
-    }>;
-  };
-};
-
 export type CollectionContentFragment = Pick<
   StorefrontAPI.Collection,
   'id' | 'handle' | 'title' | 'descriptionHtml'
@@ -418,26 +369,7 @@ export type SeoCollectionContentQuery = {
       }>;
     }
   >;
-  shop: Pick<StorefrontAPI.Shop, 'name'> & {
-    heading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    subheading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    ctaText?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    ctaLink?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    bgColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    textColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    accentColor?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    productsTitle?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-    productsCollection?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.Metafield, 'value'>
-    >;
-    backgroundImage?: StorefrontAPI.Maybe<{
-      reference?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-        >;
-      }>;
-    }>;
-  };
+  shop: Pick<StorefrontAPI.Shop, 'name' | 'description'>;
 };
 
 export type HeroCollectionContentQueryVariables = StorefrontAPI.Exact<{
@@ -568,46 +500,6 @@ export type HomepageFeaturedProductsQuery = {
       }
     >;
   };
-};
-
-export type HomepageCollectionProductsQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
-  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-}>;
-
-export type HomepageCollectionProductsQuery = {
-  collection?: StorefrontAPI.Maybe<{
-    products: {
-      nodes: Array<
-        Pick<
-          StorefrontAPI.Product,
-          'id' | 'title' | 'publishedAt' | 'handle' | 'vendor'
-        > & {
-          variants: {
-            nodes: Array<
-              Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
-                image?: StorefrontAPI.Maybe<
-                  Pick<
-                    StorefrontAPI.Image,
-                    'url' | 'altText' | 'width' | 'height'
-                  >
-                >;
-                price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-                compareAtPrice?: StorefrontAPI.Maybe<
-                  Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-                >;
-                selectedOptions: Array<
-                  Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
-                >;
-                product: Pick<StorefrontAPI.Product, 'handle' | 'title'>;
-              }
-            >;
-          };
-        }
-      >;
-    };
-  }>;
 };
 
 export type HomepageFeaturedCollectionsQueryVariables = StorefrontAPI.Exact<{
@@ -1483,11 +1375,7 @@ interface GeneratedQueryTypes {
     return: GetShopPrimaryDomainQuery;
     variables: GetShopPrimaryDomainQueryVariables;
   };
-  '#graphql\n  query homepageShopSettings($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    shop {\n      ...HomepageShopSettings\n    }\n  }\n  #graphql\n  fragment HomepageShopSettings on Shop {\n    name\n    heading: metafield(namespace: "homepage", key: "heading") {\n      value\n    }\n    subheading: metafield(namespace: "homepage", key: "subheading") {\n      value\n    }\n    ctaText: metafield(namespace: "homepage", key: "cta_text") {\n      value\n    }\n    ctaLink: metafield(namespace: "homepage", key: "cta_link") {\n      value\n    }\n    bgColor: metafield(namespace: "homepage", key: "background_color") {\n      value\n    }\n    textColor: metafield(namespace: "homepage", key: "text_color") {\n      value\n    }\n    accentColor: metafield(namespace: "homepage", key: "accent_color") {\n      value\n    }\n    productsTitle: metafield(namespace: "homepage", key: "products_title") {\n      value\n    }\n    productsCollection: metafield(namespace: "homepage", key: "products_collection") {\n      value\n    }\n    backgroundImage: metafield(namespace: "homepage", key: "background_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n': {
-    return: HomepageShopSettingsQuery;
-    variables: HomepageShopSettingsQueryVariables;
-  };
-  '#graphql\n  query seoCollectionContent($handle: String, $country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    hero: collection(handle: $handle) {\n      ...CollectionContent\n    }\n    shop {\n      ...HomepageShopSettings\n    }\n  }\n  #graphql\n  fragment CollectionContent on Collection {\n    id\n    handle\n    title\n    descriptionHtml\n    heading: metafield(namespace: "hero", key: "title") {\n      value\n    }\n    byline: metafield(namespace: "hero", key: "byline") {\n      value\n    }\n    cta: metafield(namespace: "hero", key: "cta") {\n      value\n    }\n    spread: metafield(namespace: "hero", key: "spread") {\n      reference {\n        ...Media\n      }\n    }\n    spreadSecondary: metafield(namespace: "hero", key: "spread_secondary") {\n      reference {\n        ...Media\n      }\n    }\n  }\n  #graphql\n  fragment Media on Media {\n    __typename\n    mediaContentType\n    alt\n    previewImage {\n      url\n    }\n    ... on MediaImage {\n      id\n      image {\n        id\n        url\n        width\n        height\n      }\n    }\n    ... on Video {\n      id\n      sources {\n        mimeType\n        url\n      }\n    }\n    ... on Model3d {\n      id\n      sources {\n        mimeType\n        url\n      }\n    }\n    ... on ExternalVideo {\n      id\n      embedUrl\n      host\n    }\n  }\n\n\n  #graphql\n  fragment HomepageShopSettings on Shop {\n    name\n    heading: metafield(namespace: "homepage", key: "heading") {\n      value\n    }\n    subheading: metafield(namespace: "homepage", key: "subheading") {\n      value\n    }\n    ctaText: metafield(namespace: "homepage", key: "cta_text") {\n      value\n    }\n    ctaLink: metafield(namespace: "homepage", key: "cta_link") {\n      value\n    }\n    bgColor: metafield(namespace: "homepage", key: "background_color") {\n      value\n    }\n    textColor: metafield(namespace: "homepage", key: "text_color") {\n      value\n    }\n    accentColor: metafield(namespace: "homepage", key: "accent_color") {\n      value\n    }\n    productsTitle: metafield(namespace: "homepage", key: "products_title") {\n      value\n    }\n    productsCollection: metafield(namespace: "homepage", key: "products_collection") {\n      value\n    }\n    backgroundImage: metafield(namespace: "homepage", key: "background_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n': {
+  '#graphql\n  query seoCollectionContent($handle: String, $country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    hero: collection(handle: $handle) {\n      ...CollectionContent\n    }\n    shop {\n      name\n      description\n    }\n  }\n  #graphql\n  fragment CollectionContent on Collection {\n    id\n    handle\n    title\n    descriptionHtml\n    heading: metafield(namespace: "hero", key: "title") {\n      value\n    }\n    byline: metafield(namespace: "hero", key: "byline") {\n      value\n    }\n    cta: metafield(namespace: "hero", key: "cta") {\n      value\n    }\n    spread: metafield(namespace: "hero", key: "spread") {\n      reference {\n        ...Media\n      }\n    }\n    spreadSecondary: metafield(namespace: "hero", key: "spread_secondary") {\n      reference {\n        ...Media\n      }\n    }\n  }\n  #graphql\n  fragment Media on Media {\n    __typename\n    mediaContentType\n    alt\n    previewImage {\n      url\n    }\n    ... on MediaImage {\n      id\n      image {\n        id\n        url\n        width\n        height\n      }\n    }\n    ... on Video {\n      id\n      sources {\n        mimeType\n        url\n      }\n    }\n    ... on Model3d {\n      id\n      sources {\n        mimeType\n        url\n      }\n    }\n    ... on ExternalVideo {\n      id\n      embedUrl\n      host\n    }\n  }\n\n\n': {
     return: SeoCollectionContentQuery;
     variables: SeoCollectionContentQueryVariables;
   };
@@ -1495,15 +1383,11 @@ interface GeneratedQueryTypes {
     return: HeroCollectionContentQuery;
     variables: HeroCollectionContentQueryVariables;
   };
-  '#graphql\n  query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    products(first: 12, sortKey: CREATED_AT, reverse: true) {\n      nodes {\n        ...ProductCard\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    title\n    publishedAt\n    handle\n    vendor\n    variants(first: 1) {\n      nodes {\n        id\n        availableForSale\n        image {\n          url\n          altText\n          width\n          height\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        product {\n          handle\n          title\n        }\n      }\n    }\n  }\n\n': {
+  '#graphql\n  query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    products(first: 8) {\n      nodes {\n        ...ProductCard\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    title\n    publishedAt\n    handle\n    vendor\n    variants(first: 1) {\n      nodes {\n        id\n        availableForSale\n        image {\n          url\n          altText\n          width\n          height\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        product {\n          handle\n          title\n        }\n      }\n    }\n  }\n\n': {
     return: HomepageFeaturedProductsQuery;
     variables: HomepageFeaturedProductsQueryVariables;
   };
-  '#graphql\n  query homepageCollectionProducts(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      products(first: 12, sortKey: CREATED, reverse: true) {\n        nodes {\n          ...ProductCard\n        }\n      }\n    }\n  }\n  #graphql\n  fragment ProductCard on Product {\n    id\n    title\n    publishedAt\n    handle\n    vendor\n    variants(first: 1) {\n      nodes {\n        id\n        availableForSale\n        image {\n          url\n          altText\n          width\n          height\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        product {\n          handle\n          title\n        }\n      }\n    }\n  }\n\n': {
-    return: HomepageCollectionProductsQuery;
-    variables: HomepageCollectionProductsQueryVariables;
-  };
-  '#graphql\n  query homepageFeaturedCollections($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    collections(first: 4, sortKey: UPDATED_AT) {\n      nodes {\n        id\n        title\n        handle\n        image {\n          altText\n          width\n          height\n          url\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query homepageFeaturedCollections($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    collections(\n      first: 4,\n      sortKey: UPDATED_AT\n    ) {\n      nodes {\n        id\n        title\n        handle\n        image {\n          altText\n          width\n          height\n          url\n        }\n      }\n    }\n  }\n': {
     return: HomepageFeaturedCollectionsQuery;
     variables: HomepageFeaturedCollectionsQueryVariables;
   };
