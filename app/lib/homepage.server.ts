@@ -56,15 +56,15 @@ export type HomepageConfig = {
 };
 
 const DEFAULTS = {
-  heading: 'All Mountain All Season',
+  heading: 'RADIANT SKIN ELIXIR',
   subheading:
-    'The All New Hydrogen Snowboard Exclusively From Shopify',
-  ctaText: 'Shop Now →',
+    'Reveal your natural luminosity with our molecular skin serum. A lightweight organic infusion of golden botanicals for ultimate cellular restoration.',
+  ctaText: 'Explore the Collection',
   ctaLink: '/collections/all',
-  backgroundColor: '#141414',
-  textColor: '#fafaf9',
-  accentColor: '#bf4800',
-  productsTitle: 'New Arrivals',
+  backgroundColor: '#FAF7F2',
+  textColor: '#1E1E1C',
+  accentColor: '#B89E74',
+  productsTitle: 'The Signature Line',
 };
 
 function mediaImageUrl(
@@ -107,15 +107,15 @@ export function parseHomepageConfig(
       shop?.bgColor?.value?.trim() || DEFAULTS.backgroundColor,
     textColor: shop?.textColor?.value?.trim() || DEFAULTS.textColor,
     accentColor: shop?.accentColor?.value?.trim() || DEFAULTS.accentColor,
-    backgroundImageUrl: bgFromMetafield || bgFromHero,
+    backgroundImageUrl: bgFromMetafield || bgFromHero || '/cream_texture.png',
     backgroundImageAlt:
       shop?.backgroundImage?.reference?.image?.altText ||
       hero?.spread?.reference?.alt ||
-      'Homepage background',
+      'Luxury cosmetic cream texture background',
     productsTitle:
       shop?.productsTitle?.value?.trim() || DEFAULTS.productsTitle,
     productsCollectionHandle:
       shop?.productsCollection?.value?.trim() || null,
-    secondaryImageUrl: secondaryFromHero,
+    secondaryImageUrl: secondaryFromHero || '/serum_dropper.png',
   };
 }

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -63,7 +65,12 @@ shop-pay-button {
   }
 
   body {
+    font-family: 'Inter', system-ui, sans-serif;
     @apply border-primary/10 bg-contrast text-primary/90 antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
 
   html {
@@ -235,9 +242,9 @@ shop-pay-button {
   .homepage-product-card {
     transform-style: preserve-3d;
     transition:
-      transform 0.4s ease,
-      opacity 0.6s ease;
-    transform: translate3d(0, 60px, -80px) rotateX(12deg);
+      transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      opacity 0.7s ease;
+    transform: translate3d(0, 50px, -60px) rotateX(10deg);
     opacity: 0;
   }
 
@@ -255,12 +262,30 @@ shop-pay-button {
   @keyframes homepageScrollPulse {
     0%,
     100% {
-      transform: scaleY(0.6);
-      opacity: 0.3;
+      transform: scaleY(0.5);
+      opacity: 0.2;
     }
     50% {
       transform: scaleY(1);
-      opacity: 0.8;
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-16px);
+    }
+  }
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
     }
   }
 }

@@ -90,8 +90,8 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 async function loadHomepageProducts(
   context: LoaderFunctionArgs['context'],
-  country: string,
-  language: string,
+  country: any,
+  language: any,
 ) {
   const {storefront} = context;
 
@@ -148,7 +148,7 @@ export default function Homepage() {
           }
         >
           <Await resolve={featuredProducts}>
-            {(response) => {
+            {(response: any) => {
               const nodes =
                 response?.products?.nodes ??
                 response?.collection?.products?.nodes ??

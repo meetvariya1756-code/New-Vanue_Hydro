@@ -15,21 +15,21 @@ type ProductShowcase3DProps = {
 export function ProductShowcase3D({
   title,
   products,
-  accentColor = 'var(--homepage-accent, #bf4800)',
+  accentColor = 'var(--homepage-accent, #B89E74)',
   viewAllLink = '/collections/all',
 }: ProductShowcase3DProps) {
   const {ref, inView} = useInView({
     triggerOnce: true,
-    threshold: 0.12,
-    rootMargin: '-40px 0px',
+    threshold: 0.08,
+    rootMargin: '-20px 0px',
   });
 
   if (!products.length) {
     return (
-      <section className="homepage-products px-6 py-20 md:px-12 lg:px-20">
-        <h2 className="text-3xl font-bold md:text-4xl">{title}</h2>
-        <p className="mt-4 text-primary/60">
-          Add products in Shopify Admin — they will appear here automatically.
+      <section className="homepage-products px-6 py-24 md:px-12 lg:px-20 max-w-7xl mx-auto">
+        <h2 className="font-serif text-3xl font-light tracking-wide md:text-4xl">{title}</h2>
+        <p className="mt-4 text-primary/60 font-light">
+          Add skincare products in Shopify Admin — they will appear here automatically.
         </p>
       </section>
     );
@@ -39,34 +39,42 @@ export function ProductShowcase3D({
     <section
       ref={ref}
       className={clsx(
-        'homepage-products relative overflow-hidden px-6 py-20 md:px-12 lg:px-20',
+        'homepage-products relative overflow-hidden px-6 py-24 md:px-12 lg:px-20 max-w-7xl mx-auto',
         inView && 'homepage-products--visible',
       )}
-      style={{perspective: '1400px'}}
+      style={{perspective: '1500px'}}
     >
-      <div className="homepage-products__glow pointer-events-none absolute -right-20 top-0 h-64 w-64 rounded-full opacity-30 blur-3xl" />
+      {/* Luxury background ambient golden glow */}
+      <div 
+        className="homepage-products__glow pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full opacity-[0.06] blur-[90px] select-none"
+        style={{backgroundColor: accentColor}}
+      />
+      <div 
+        className="homepage-products__glow pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.04] blur-[90px] select-none"
+        style={{backgroundColor: accentColor}}
+      />
 
-      <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-16 flex flex-wrap items-end justify-between gap-6 border-b border-primary/5 pb-6">
         <div>
           <p
-            className="mb-2 text-sm font-medium uppercase tracking-[0.2em]"
+            className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
             style={{color: accentColor}}
           >
-            From your store
+            The Collection
           </p>
-          <h2 className="text-3xl font-bold md:text-5xl">{title}</h2>
+          <h2 className="font-serif text-3xl font-light tracking-wide md:text-5xl">{title}</h2>
         </div>
         <Link
           to={viewAllLink}
           prefetch="intent"
-          className="text-sm font-semibold uppercase tracking-wider underline-offset-4 hover:underline"
+          className="text-xs font-semibold uppercase tracking-[0.2em] pb-1 border-b border-current hover:opacity-75 transition-opacity"
           style={{color: accentColor}}
         >
-          View all →
+          View all products
         </Link>
       </div>
 
-      <div className="homepage-products__grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="homepage-products__grid grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product, index) => (
           <ProductCard3D
             key={product.id}
@@ -94,12 +102,15 @@ function ProductCard3D({
   return (
     <div
       ref={cardRef}
-      className={clsx('homepage-product-card', inView && 'homepage-product-card--in')}
+      className={clsx(
+        'homepage-product-card group relative p-[1px] rounded-2xl transition-all duration-500 ease-out',
+        inView && 'homepage-product-card--in'
+      )}
       style={{
-        animationDelay: `${index * 80}ms`,
+        animationDelay: `${index * 70}ms`,
         transform: inView
           ? undefined
-          : `translate3d(0, 60px, -80px) rotateX(12deg)`,
+          : `translate3d(0, 50px, -60px) rotateX(10deg)`,
       }}
       onMouseMove={(e) => {
         const el = cardRef.current;
@@ -107,8 +118,13 @@ function ProductCard3D({
         const rect = el.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
-        el.style.setProperty('--tilt-x', `${-y * 12}deg`);
-        el.style.setProperty('--tilt-y', `${x * 12}deg`);
+        const xPx = e.clientX - rect.left;
+        const yPx = e.clientY - rect.top;
+
+        el.style.setProperty('--tilt-x', `${-y * 11}deg`);
+        el.style.setProperty('--tilt-y', `${x * 11}deg`);
+        el.style.setProperty('--mouse-x-px', `${xPx}px`);
+        el.style.setProperty('--mouse-y-px', `${yPx}px`);
       }}
       onMouseLeave={() => {
         const el = cardRef.current;
@@ -117,7 +133,35 @@ function ProductCard3D({
         el.style.setProperty('--tilt-y', '0deg');
       }}
     >
-      <ProductCard product={product} className="w-full" />
+      {/* 3D dynamic cursor spotlight shine effect */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(130px circle at var(--mouse-x-px, 0px) var(--mouse-y-px, 0px), rgba(184, 158, 116, 0.14), transparent 80%)`,
+        }}
+      />
+
+      {/* Muted luxury golden border that illuminates on hover */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none rounded-2xl border transition-colors duration-300"
+        style={{
+          borderColor: 'rgba(184, 158, 116, 0.12)',
+        }}
+      />
+      <div
+        className="absolute inset-0 z-10 pointer-events-none rounded-2xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          borderColor: 'rgba(184, 158, 116, 0.38)',
+          boxShadow: '0 0 15px rgba(184, 158, 116, 0.12)',
+        }}
+      />
+
+      {/* Glassmorphic card body wrapper */}
+      <div 
+        className="relative z-10 h-full w-full rounded-2xl bg-[rgba(255,255,255,0.015)] backdrop-blur-[1px] transition-shadow duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.01)] group-hover:shadow-[0_20px_45px_rgba(0,0,0,0.05)] overflow-hidden"
+      >
+        <ProductCard product={product} className="w-full" />
+      </div>
     </div>
   );
 }
