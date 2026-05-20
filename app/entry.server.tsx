@@ -16,6 +16,19 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    styleSrc: [
+      'self',
+      'unsafe-inline',
+      'https://fonts.googleapis.com',
+      'https://cdn.shopify.com',
+      ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:*'] : []),
+    ],
+    fontSrc: [
+      'self',
+      'https://fonts.gstatic.com',
+      'https://cdn.shopify.com',
+      ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:*'] : []),
+    ],
     scriptSrc: [
       'self',
       'https://cdn.shopify.com',

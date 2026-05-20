@@ -14,18 +14,30 @@ export async function getFeaturedData(
   storefront: LoaderFunctionArgs['context']['storefront'],
   variables: {pageBy?: number} = {},
 ) {
-  const data = await storefront.query(FEATURED_ITEMS_QUERY, {
-    variables: {
-      pageBy: 12,
-      country: storefront.i18n.country,
-      language: storefront.i18n.language,
-      ...variables,
-    },
-  });
+  try {
+    const data = await storefront.query(FEATURED_ITEMS_QUERY, {
+      variables: {
+        pageBy: 12,
+        country: storefront.i18n.country,
+        language: storefront.i18n.language,
+        ...variables,
+      },
+    });
 
-  invariant(data, 'No featured items data returned from Shopify API');
+    invariant(data, 'No featured items data returned from Shopify API');
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error('Error fetching featured items data:', error);
+    return {
+      featuredCollections: {
+        nodes: []
+      },
+      featuredProducts: {
+        nodes: []
+      }
+    };
+  }
 }
 
 export type FeaturedData = Awaited<ReturnType<typeof getFeaturedData>>;

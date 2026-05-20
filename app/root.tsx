@@ -274,43 +274,62 @@ const LAYOUT_QUERY = `#graphql
 ` as const;
 
 async function getLayoutData({storefront, env}: AppLoadContext) {
-  const data = await storefront.query(LAYOUT_QUERY, {
-    variables: {
-      headerMenuHandle: 'main-menu',
-      footerMenuHandle: 'footer',
-      language: storefront.i18n.language,
-    },
-  });
+  try {
+    const data = await storefront.query(LAYOUT_QUERY, {
+      variables: {
+        headerMenuHandle: 'main-menu',
+        footerMenuHandle: 'footer',
+        language: storefront.i18n.language,
+      },
+    });
 
-  invariant(data, 'No data returned from Shopify API');
+    invariant(data, 'No data returned from Shopify API');
 
-  /*
-    Modify specific links/routes (optional)
-    @see: https://shopify.dev/api/storefront/unstable/enums/MenuItemType
-    e.g here we map:
-      - /blogs/news -> /news
-      - /blog/news/blog-post -> /news/blog-post
-      - /collections/all -> /products
-  */
-  const customPrefixes = {BLOG: '', CATALOG: 'products'};
+    /*
+      Modify specific links/routes (optional)
+      @see: https://shopify.dev/api/storefront/unstable/enums/MenuItemType
+      e.g here we map:
+        - /blogs/news -> /news
+        - /blog/news/blog-post -> /news/blog-post
+        - /collections/all -> /products
+    */
+    const customPrefixes = {BLOG: '', CATALOG: 'products'};
 
-  const headerMenu = data?.headerMenu
-    ? parseMenu(
-        data.headerMenu,
-        data.shop.primaryDomain.url,
-        env,
-        customPrefixes,
-      )
-    : undefined;
+    const headerMenu = data?.headerMenu
+      ? parseMenu(
+          data.headerMenu,
+          data.shop.primaryDomain.url,
+          env,
+          customPrefixes,
+        )
+      : undefined;
 
-  const footerMenu = data?.footerMenu
-    ? parseMenu(
-        data.footerMenu,
-        data.shop.primaryDomain.url,
-        env,
-        customPrefixes,
-      )
-    : undefined;
+    const footerMenu = data?.footerMenu
+      ? parseMenu(
+          data.footerMenu,
+          data.shop.primaryDomain.url,
+          env,
+          customPrefixes,
+        )
+      : undefined;
 
-  return {shop: data.shop, headerMenu, footerMenu};
+    return {shop: data.shop, headerMenu, footerMenu};
+  } catch (error) {
+    console.error('Error fetching layout data:', error);
+    return {
+      shop: {
+        id: 'fallback-shop',
+        name: 'Vanue Glams',
+        description: 'Premium organic botanical skincare',
+        primaryDomain: {
+          url: '/'
+        },
+        brand: {
+          logo: null
+        }
+      },
+      headerMenu: undefined,
+      footerMenu: undefined
+    };
+  }
 }

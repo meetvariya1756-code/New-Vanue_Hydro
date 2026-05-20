@@ -1,5 +1,5 @@
-import useWindowScroll from 'react-use/esm/useWindowScroll';
-import {CosmeticBottleVisual} from '~/components/CosmeticBottleVisual';
+import { useState, useEffect } from 'react';
+import { CosmeticBottleVisual } from '~/components/CosmeticBottleVisual';
 
 const LEFT_FEATURES = [
   {
@@ -32,8 +32,15 @@ const RIGHT_FEATURES = [
 ];
 
 export function VanueGlamsBenefitsSection() {
-  const {y} = useWindowScroll();
-  const progress = Math.min(1, Math.max(0, (y - 420) / 950));
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const progress = Math.min(1, Math.max(0, (scrollY - 420) / 950));
   const rotate = progress * 120;
   const raise = progress * 24;
 

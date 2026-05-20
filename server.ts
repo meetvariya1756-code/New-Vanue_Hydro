@@ -43,13 +43,21 @@ export default {
       /**
        * Create Hydrogen's Storefront client.
        */
+      let publicStorefrontToken = env.PUBLIC_STOREFRONT_API_TOKEN;
+      let storeDomain = env.PUBLIC_STORE_DOMAIN;
+
+      if (!storeDomain || storeDomain.includes('quickstart-8848c07c')) {
+        storeDomain = 'hydrogen-preview.myshopify.com';
+        publicStorefrontToken = '3b580e70970c4528da70c98e097c2fa0';
+      }
+
       const {storefront} = createStorefrontClient({
         cache,
         waitUntil,
         i18n: getLocaleFromRequest(request),
-        publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+        publicStorefrontToken,
         privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
-        storeDomain: env.PUBLIC_STORE_DOMAIN,
+        storeDomain,
         storefrontId: env.PUBLIC_STOREFRONT_ID,
         storefrontHeaders: getStorefrontHeaders(request),
       });

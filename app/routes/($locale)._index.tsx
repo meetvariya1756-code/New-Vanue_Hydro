@@ -8,10 +8,11 @@ import {Await, useLoaderData} from '@remix-run/react';
 import {getSeoMeta} from '@shopify/hydrogen';
 
 import {Hero} from '~/components/Hero';
+import {HeroSlider} from '~/components/HeroSlider';
 import {VanueGlamsSection} from '~/components/VanueGlamsSection';
 import {VanueGlamsBenefitsSection} from '~/components/VanueGlamsBenefitsSection';
 import {FeaturedCollections} from '~/components/FeaturedCollections';
-import {ProductSwimlane} from '~/components/ProductSwimlane';
+import {ProductShowcase3D} from '~/components/homepage/ProductShowcase3D';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {getHeroPlaceholder} from '~/lib/placeholders';
 import {seoPayload} from '~/lib/seo.server';
@@ -46,18 +47,30 @@ export async function loader(args: LoaderFunctionArgs) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
 async function loadCriticalData({context, request}: LoaderFunctionArgs) {
-  const [{shop, hero}] = await Promise.all([
-    context.storefront.query(HOMEPAGE_SEO_QUERY, {
-      variables: {handle: 'freestyle'},
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+  try {
+    const [{shop, hero}] = await Promise.all([
+      context.storefront.query(HOMEPAGE_SEO_QUERY, {
+        variables: {handle: 'freestyle'},
+      }),
+      // Add other queries here, so that they are loaded in parallel
+    ]);
 
-  return {
-    shop,
-    primaryHero: hero,
-    seo: seoPayload.home({url: request.url}),
-  };
+    return {
+      shop,
+      primaryHero: hero,
+      seo: seoPayload.home({url: request.url}),
+    };
+  } catch (error) {
+    console.error('Error loading critical homepage data:', error);
+    return {
+      shop: {
+        name: 'Vanue Glams',
+        description: 'Premium organic botanical skincare',
+      },
+      primaryHero: null,
+      seo: seoPayload.home({url: request.url}),
+    };
+  }
 }
 
 /**
@@ -161,11 +174,13 @@ export default function Homepage() {
 
   return (
     <>
-      {primaryHero && (
-        <Hero {...primaryHero} height="full" top loading="eager" />
-      )}
+      <HeroSlider />
       <VanueGlamsSection />
       <VanueGlamsBenefitsSection />
+
+      {primaryHero && (
+        <Hero {...primaryHero} height="full" loading="eager" />
+      )}
 
       {featuredProducts && (
         <Suspense>
@@ -179,10 +194,9 @@ export default function Homepage() {
                 return <></>;
               }
               return (
-                <ProductSwimlane
-                  products={response.products}
+                <ProductShowcase3D
                   title="Featured Products"
-                  count={4}
+                  products={response.products.nodes}
                 />
               );
             }}
