@@ -111,7 +111,7 @@ export function parseHomepageConfig(
     heading:
       shop?.heading?.value?.trim() ||
       finalHeroHeading ||
-      shop?.name ||
+      (shop?.name && shop.name !== 'Hydrogen Demo Store' ? shop.name : null) ||
       DEFAULTS.heading,
     subheading:
       shop?.subheading?.value?.trim() || finalHeroByline || DEFAULTS.subheading,

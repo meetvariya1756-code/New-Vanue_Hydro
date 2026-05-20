@@ -59,6 +59,14 @@ export function PageLayout({children, layout}: LayoutProps) {
   );
 }
 
+function getCosmeticMenuTitle(title: string): string {
+  const t = title.trim().toLowerCase();
+  if (t === 'collections') return 'Serum Collections';
+  if (t === 'products') return 'Shop Skincare';
+  if (t === 'journal') return 'Beauty Journal';
+  return title;
+}
+
 function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
   const isHome = useIsHomePath();
 
@@ -160,7 +168,7 @@ function MenuMobileNav({
             }
           >
             <Text as="span" size="copy">
-              {item.title}
+              {getCosmeticMenuTitle(item.title)}
             </Text>
           </Link>
         </span>
@@ -292,7 +300,7 @@ function DesktopHeader({
                 isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
               }
             >
-              {item.title}
+              {getCosmeticMenuTitle(item.title)}
             </Link>
           ))}
         </nav>
