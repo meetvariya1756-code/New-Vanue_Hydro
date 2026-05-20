@@ -179,4 +179,88 @@ shop-pay-button {
       @apply aspect-[inherit] w-full object-cover;
     }
   }
+
+  /* Animated homepage */
+  .homepage-hero__title {
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .homepage-shape {
+    opacity: 0.35;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .homepage-shape--1 {
+    width: 28vw;
+    height: 28vw;
+    max-width: 220px;
+    max-height: 220px;
+    background: linear-gradient(
+      135deg,
+      var(--homepage-accent, #bf4800) 0%,
+      transparent 70%
+    );
+  }
+
+  .homepage-shape--2 {
+    width: 18vw;
+    height: 18vw;
+    max-width: 140px;
+    max-height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .homepage-shape--3 {
+    width: 40vw;
+    height: 12vw;
+    max-width: 360px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.06),
+      transparent
+    );
+  }
+
+  .homepage-scroll-hint__line {
+    animation: homepageScrollPulse 2s ease-in-out infinite;
+  }
+
+  .homepage-products__glow {
+    background: var(--homepage-accent, #bf4800);
+  }
+
+  .homepage-product-card {
+    transform-style: preserve-3d;
+    transition:
+      transform 0.4s ease,
+      opacity 0.6s ease;
+    transform: translate3d(0, 60px, -80px) rotateX(12deg);
+    opacity: 0;
+  }
+
+  .homepage-products--visible .homepage-product-card--in {
+    transform: translate3d(0, 0, 0) rotateX(0)
+      rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    opacity: 1;
+  }
+
+  .homepage-product-card:hover {
+    transform: translate3d(0, -8px, 24px) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg));
+  }
+
+  @keyframes homepageScrollPulse {
+    0%,
+    100% {
+      transform: scaleY(0.6);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scaleY(1);
+      opacity: 0.8;
+    }
+  }
 }
