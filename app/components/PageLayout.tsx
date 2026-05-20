@@ -226,15 +226,16 @@ function MobileHeader({
       </div>
 
       <Link
-        className="flex items-center self-stretch leading-[3rem] md:leading-[4rem] justify-center flex-grow w-full h-full"
+        className="flex items-center self-stretch justify-center flex-grow w-full h-full"
         to="/"
       >
-        <Heading
-          className="font-bold text-center leading-none"
-          as={isHome ? 'h1' : 'h2'}
-        >
-          {title}
-        </Heading>
+        <img
+          src="/vanu_glams_logo.webp"
+          alt="Vanue Glams"
+          className="h-8 w-auto object-contain"
+          width={128}
+          height={32}
+        />
       </Link>
 
       <div className="flex items-center justify-end w-full gap-4">
@@ -270,8 +271,14 @@ function DesktopHeader({
       } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
     >
       <div className="flex gap-12">
-        <Link className="font-bold" to="/" prefetch="intent">
-          {title}
+        <Link className="font-bold flex items-center" to="/" prefetch="intent">
+          <img
+            src="/vanu_glams_logo.webp"
+            alt="Vanue Glams"
+            className="h-9 w-auto object-contain transition-transform duration-300 hover:scale-105"
+            width={144}
+            height={36}
+          />
         </Link>
         <nav className="flex gap-8">
           {/* Top level menu items */}
