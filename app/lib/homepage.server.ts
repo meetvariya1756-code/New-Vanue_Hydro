@@ -56,10 +56,10 @@ export type HomepageConfig = {
 };
 
 const DEFAULTS = {
-  heading: 'RADIANT SKIN ELIXIR',
+  heading: '10% VITAMIN C SERUM',
   subheading:
-    'Reveal your natural luminosity with our molecular skin serum. A lightweight organic infusion of golden botanicals for ultimate cellular restoration.',
-  ctaText: 'Explore the Collection',
+    'Infused with Vitamin E & Pro Vitamin B5 for an anti-aging, professional radiant glow. Restore your skin\'s natural brilliance.',
+  ctaText: 'Shop Serum',
   ctaLink: '/collections/all',
   backgroundColor: '#FAF7F2',
   textColor: '#1E1E1C',
@@ -91,31 +91,47 @@ export function parseHomepageConfig(
   const bgFromHero = mediaImageUrl(hero?.spread);
   const secondaryFromHero = mediaImageUrl(hero?.spreadSecondary);
 
+  // Safely detect if the returned hero data belongs to the default snowboard demo
+  const isSnowboardHero =
+    heroHeading?.toLowerCase().includes('mountain') ||
+    heroHeading?.toLowerCase().includes('snowboard') ||
+    heroHeading?.toLowerCase().includes('freestyle') ||
+    heroByline?.toLowerCase().includes('snowboard') ||
+    heroByline?.toLowerCase().includes('freestyle') ||
+    (bgFromHero && (bgFromHero.includes('snowboard') || bgFromHero.includes('freestyle') || bgFromHero.includes('mountain'))) ||
+    (secondaryFromHero && (secondaryFromHero.includes('snowboard') || secondaryFromHero.includes('freestyle') || secondaryFromHero.includes('mountain')));
+
+  const finalHeroHeading = isSnowboardHero ? null : heroHeading;
+  const finalHeroByline = isSnowboardHero ? null : heroByline;
+  const finalHeroCta = isSnowboardHero ? null : heroCta;
+  const finalBgFromHero = isSnowboardHero ? null : bgFromHero;
+  const finalSecondaryFromHero = isSnowboardHero ? null : secondaryFromHero;
+
   return {
     heading:
       shop?.heading?.value?.trim() ||
-      heroHeading ||
+      finalHeroHeading ||
       shop?.name ||
       DEFAULTS.heading,
     subheading:
-      shop?.subheading?.value?.trim() || heroByline || DEFAULTS.subheading,
-    ctaText: shop?.ctaText?.value?.trim() || heroCta || DEFAULTS.ctaText,
+      shop?.subheading?.value?.trim() || finalHeroByline || DEFAULTS.subheading,
+    ctaText: shop?.ctaText?.value?.trim() || finalHeroCta || DEFAULTS.ctaText,
     ctaLink:
       shop?.ctaLink?.value?.trim() ||
-      (heroHandle ? `/collections/${heroHandle}` : DEFAULTS.ctaLink),
+      (heroHandle && !isSnowboardHero ? `/collections/${heroHandle}` : DEFAULTS.ctaLink),
     backgroundColor:
       shop?.bgColor?.value?.trim() || DEFAULTS.backgroundColor,
     textColor: shop?.textColor?.value?.trim() || DEFAULTS.textColor,
     accentColor: shop?.accentColor?.value?.trim() || DEFAULTS.accentColor,
-    backgroundImageUrl: bgFromMetafield || bgFromHero || '/cream_texture.png',
+    backgroundImageUrl: bgFromMetafield || finalBgFromHero || '/cream_texture.png',
     backgroundImageAlt:
       shop?.backgroundImage?.reference?.image?.altText ||
-      hero?.spread?.reference?.alt ||
+      (!isSnowboardHero ? hero?.spread?.reference?.alt : null) ||
       'Luxury cosmetic cream texture background',
     productsTitle:
       shop?.productsTitle?.value?.trim() || DEFAULTS.productsTitle,
     productsCollectionHandle:
       shop?.productsCollection?.value?.trim() || null,
-    secondaryImageUrl: secondaryFromHero || '/serum_dropper.png',
+    secondaryImageUrl: finalSecondaryFromHero || '/vanue_serum.png',
   };
 }
