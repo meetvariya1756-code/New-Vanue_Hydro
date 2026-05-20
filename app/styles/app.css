@@ -6,16 +6,25 @@
 
 /* Tokens */
 :root {
-  --color-primary: 20 20 20; /* Text, buttons, etc. */
-  --color-contrast: 250 250 249; /* Backgrounds, borders, etc. */
-  --color-accent: 191 72 0; /* Labels like "On sale" */
-  --font-size-fine: 0.75rem; /* text-xs */
-  --font-size-copy: 1rem; /* text-base */
-  --font-size-lead: 1.125rem; /* text-lg */
-  --font-size-heading: 2rem; /* text-2xl */
-  --font-size-display: 3rem; /* text-4xl */
+  --color-primary: 20 20 20;
+  /* Text, buttons, etc. */
+  --color-contrast: 250 250 249;
+  /* Backgrounds, borders, etc. */
+  --color-accent: 191 72 0;
+  /* Labels like "On sale" */
+  --font-size-fine: 0.75rem;
+  /* text-xs */
+  --font-size-copy: 1rem;
+  /* text-base */
+  --font-size-lead: 1.125rem;
+  /* text-lg */
+  --font-size-heading: 2rem;
+  /* text-2xl */
+  --font-size-display: 3rem;
+  /* text-4xl */
   --color-shop-pay: #5a31f4;
-  --shop-pay-button--width: 100%; /* Sets the width for the shop-pay-button web component */
+  --shop-pay-button--width: 100%;
+  /* Sets the width for the shop-pay-button web component */
   --height-nav: 3rem;
   --screen-height: 100vh;
   --screen-height-dynamic: 100vh;
@@ -23,14 +32,19 @@
   @media (min-width: 32em) {
     --height-nav: 4rem;
   }
+
   @media (min-width: 48em) {
     --height-nav: 6rem;
-    --font-size-heading: 2.25rem; /* text-4xl */
-    --font-size-display: 3.75rem; /* text-6xl */
+    --font-size-heading: 2.25rem;
+    /* text-4xl */
+    --font-size-display: 3.75rem;
+    /* text-6xl */
   }
+
   @supports (height: 100svh) {
     --screen-height: 100svh;
   }
+
   @supports (height: 100dvh) {
     --screen-height-dynamic: 100dvh;
   }
@@ -48,6 +62,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -69,7 +84,12 @@ shop-pay-button {
     @apply border-primary/10 bg-contrast text-primary/90 antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Cormorant Garamond', Georgia, serif;
   }
 
@@ -97,6 +117,7 @@ shop-pay-button {
   }
 
   .prose {
+
     h1,
     h2,
     h3,
@@ -112,6 +133,7 @@ shop-pay-button {
 
 @layer components {
   .article {
+
     h2,
     h3,
     h4,
@@ -119,12 +141,15 @@ shop-pay-button {
     h6 {
       @apply font-sans text-primary;
     }
+
     @apply prose mx-auto mb-12 grid justify-center font-serif text-primary;
+
     p,
     ul,
     li {
       @apply mb-4 text-lg;
     }
+
     img {
       @apply md:-mx-8 lg:-mx-16;
 
@@ -132,6 +157,7 @@ shop-pay-button {
         width: calc(100% + 4rem);
         max-width: 100vw;
       }
+
       @media (min-width: 64em) {
         width: calc(100% + 8rem);
       }
@@ -151,6 +177,7 @@ shop-pay-button {
 
   .hiddenScroll {
     scrollbar-width: none;
+
     &::-webkit-scrollbar {
       display: none;
     }
@@ -162,6 +189,7 @@ shop-pay-button {
 
   .strike {
     position: relative;
+
     &::before {
       content: '';
       display: block;
@@ -178,10 +206,12 @@ shop-pay-button {
 
   .card-image {
     @apply relative flex items-center justify-center overflow-clip rounded;
+
     &::before {
       content: ' ';
       @apply absolute top-0 left-0 z-10 block h-full w-full rounded shadow-border;
     }
+
     img {
       @apply aspect-[inherit] w-full object-cover;
     }
@@ -203,11 +233,9 @@ shop-pay-button {
     height: 28vw;
     max-width: 220px;
     max-height: 220px;
-    background: linear-gradient(
-      135deg,
-      var(--homepage-accent, #bf4800) 0%,
-      transparent 70%
-    );
+    background: linear-gradient(135deg,
+        var(--homepage-accent, #bf4800) 0%,
+        transparent 70%);
   }
 
   .homepage-shape--2 {
@@ -223,12 +251,10 @@ shop-pay-button {
     width: 40vw;
     height: 12vw;
     max-width: 360px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.06),
-      transparent
-    );
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.06),
+        transparent);
   }
 
   .homepage-scroll-hint__line {
@@ -249,22 +275,22 @@ shop-pay-button {
   }
 
   .homepage-products--visible .homepage-product-card--in {
-    transform: translate3d(0, 0, 0) rotateX(0)
-      rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transform: translate3d(0, 0, 0) rotateX(0) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
     opacity: 1;
   }
 
   .homepage-product-card:hover {
-    transform: translate3d(0, -8px, 24px) rotateX(var(--tilt-x, 0deg))
-      rotateY(var(--tilt-y, 0deg));
+    transform: translate3d(0, -8px, 24px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   }
 
   @keyframes homepageScrollPulse {
+
     0%,
     100% {
       transform: scaleY(0.5);
       opacity: 0.2;
     }
+
     50% {
       transform: scaleY(1);
       opacity: 0.7;
@@ -272,9 +298,12 @@ shop-pay-button {
   }
 
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-16px);
     }
@@ -284,8 +313,162 @@ shop-pay-button {
     0% {
       transform: translateX(-100%);
     }
+
     100% {
       transform: translateX(100%);
     }
   }
+}
+
+/* Luxury Premium Header Redesign */
+.luxury-header {
+  background: rgba(250, 247, 242, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(184, 158, 116, 0.18) !important;
+  color: #1E1E1C !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.01) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.luxury-header-scrolled {
+  background: rgba(250, 247, 242, 0.94) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(184, 158, 116, 0.28) !important;
+  box-shadow: 0 10px 40px rgba(184, 158, 116, 0.05) !important;
+  height: 4.5rem !important;
+}
+
+.luxury-nav-link {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.22em !important;
+  color: #1E1E1C !important;
+  position: relative !important;
+  padding: 0.5rem 0 !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  opacity: 0.85;
+}
+
+.luxury-nav-link:hover {
+  color: #B89E74 !important;
+  opacity: 1 !important;
+}
+
+.luxury-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background-color: #B89E74;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.luxury-nav-link:hover::after,
+.luxury-nav-link.active::after {
+  width: 100%;
+  left: 0;
+}
+
+.luxury-search-input {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(184, 158, 116, 0.22) !important;
+  border-radius: 20px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+  color: #1E1E1C !important;
+  padding: 0.4rem 1rem !important;
+  padding-right: 2.2rem !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  width: 130px !important;
+}
+
+.luxury-search-input:focus {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: #B89E74 !important;
+  box-shadow: 0 0 12px rgba(184, 158, 116, 0.15) !important;
+  outline: none !important;
+  width: 170px !important;
+}
+
+.luxury-search-input::placeholder {
+  color: #1E1E1C !important;
+  opacity: 0.45 !important;
+}
+
+.luxury-icon-btn {
+  color: #1E1E1C !important;
+  transition: all 0.3s ease !important;
+  opacity: 0.85;
+}
+
+.luxury-icon-btn:hover {
+  color: #B89E74 !important;
+  opacity: 1 !important;
+  transform: translateY(-1px);
+}
+
+.luxury-badge {
+  position: relative !important;
+  border: 1px solid rgba(184, 158, 116, 0.3) !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: #1E1E1C !important;
+  transition: all 0.3s ease !important;
+}
+
+.luxury-badge:hover {
+  border-color: #B89E74 !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-1px);
+}
+
+.luxury-badge-count {
+  background: #B89E74 !important;
+  color: #FAF7F2 !important;
+  border-radius: 50% !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  width: 14px !important;
+  height: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: absolute !important;
+  bottom: -4px !important;
+  right: -4px !important;
+  border: 1px solid #FAF7F2 !important;
+  box-shadow: 0 2px 4px rgba(184, 158, 116, 0.2) !important;
+}
+
+.luxury-mobile-menu-drawer {
+  background: #FAF7F2 !important;
+}
+
+.luxury-mobile-nav-link {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.2em !important;
+  color: #1E1E1C !important;
+  border-bottom: 1px solid rgba(184, 158, 116, 0.1) !important;
+  padding: 1rem 0.5rem !important;
+  display: block !important;
+  transition: all 0.3s ease !important;
+}
+
+.luxury-mobile-nav-link:hover {
+  color: #B89E74 !important;
+  padding-left: 0.8rem !important;
+  border-bottom-color: rgba(184, 158, 116, 0.3) !important;
+}
+
+.h-10 {
+  height: 4.5rem;
 }

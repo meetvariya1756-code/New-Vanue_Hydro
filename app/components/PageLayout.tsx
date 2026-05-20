@@ -1,17 +1,17 @@
-import {useParams, Form, Await, useRouteLoaderData} from '@remix-run/react';
+import { useParams, Form, Await, useRouteLoaderData } from '@remix-run/react';
 import useWindowScroll from 'react-use/esm/useWindowScroll';
-import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
-import {CartForm} from '@shopify/hydrogen';
+import { Disclosure } from '@headlessui/react';
+import { Suspense, useEffect, useMemo } from 'react';
+import { CartForm } from '@shopify/hydrogen';
 
-import {type LayoutQuery} from 'storefrontapi.generated';
-import {Text, Heading, Section} from '~/components/Text';
-import {Link} from '~/components/Link';
-import {Cart} from '~/components/Cart';
-import {CartLoading} from '~/components/CartLoading';
-import {Input} from '~/components/Input';
-import {Drawer, useDrawer} from '~/components/Drawer';
-import {CountrySelector} from '~/components/CountrySelector';
+import { type LayoutQuery } from 'storefrontapi.generated';
+import { Text, Heading, Section } from '~/components/Text';
+import { Link } from '~/components/Link';
+import { Cart } from '~/components/Cart';
+import { CartLoading } from '~/components/CartLoading';
+import { Input } from '~/components/Input';
+import { Drawer, useDrawer } from '~/components/Drawer';
+import { CountrySelector } from '~/components/CountrySelector';
 import {
   IconMenu,
   IconCaret,
@@ -25,9 +25,9 @@ import {
   type ChildEnhancedMenuItem,
   useIsHomePath,
 } from '~/lib/utils';
-import {useIsHydrated} from '~/hooks/useIsHydrated';
-import {useCartFetchers} from '~/hooks/useCartFetchers';
-import type {RootLoader} from '~/root';
+import { useIsHydrated } from '~/hooks/useIsHydrated';
+import { useCartFetchers } from '~/hooks/useCartFetchers';
+import type { RootLoader } from '~/root';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -37,8 +37,8 @@ type LayoutProps = {
   };
 };
 
-export function PageLayout({children, layout}: LayoutProps) {
-  const {headerMenu, footerMenu} = layout || {};
+export function PageLayout({ children, layout }: LayoutProps) {
+  const { headerMenu, footerMenu } = layout || {};
   return (
     <>
       <div className="flex flex-col min-h-screen">
@@ -67,7 +67,7 @@ function getCosmeticMenuTitle(title: string): string {
   return title;
 }
 
-function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
+function Header({ title, menu }: { title: string; menu?: EnhancedMenu }) {
   const isHome = useIsHomePath();
 
   const {
@@ -112,7 +112,7 @@ function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
   );
 }
 
-function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
+function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const rootData = useRouteLoaderData<RootLoader>('root');
   if (!rootData) return null;
 
@@ -155,7 +155,7 @@ function MenuMobileNav({
   onClose: () => void;
 }) {
   return (
-    <nav className="grid gap-4 p-6 sm:gap-6 sm:px-12 sm:py-8">
+    <nav className="grid gap-2 p-6 sm:gap-4 sm:px-12 sm:py-8 luxury-mobile-menu-drawer min-h-screen">
       {/* Top level menu items */}
       {(menu?.items || []).map((item) => (
         <span key={item.id} className="block">
@@ -163,13 +163,11 @@ function MenuMobileNav({
             to={item.to}
             target={item.target}
             onClick={onClose}
-            className={({isActive}) =>
-              isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+            className={({ isActive }) =>
+              `${isActive ? 'active' : ''} luxury-mobile-nav-link`
             }
           >
-            <Text as="span" size="copy">
-              {getCosmeticMenuTitle(item.title)}
-            </Text>
+            {getCosmeticMenuTitle(item.title)}
           </Link>
         </span>
       ))}
@@ -188,48 +186,38 @@ function MobileHeader({
   openCart: () => void;
   openMenu: () => void;
 }) {
-  // useHeaderStyleFix(containerStyle, setContainerStyle, isHome);
-
   const params = useParams();
 
   return (
     <header
       role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } flex lg:hidden items-center h-nav sticky backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8`}
+      className="luxury-header flex lg:hidden items-center h-nav sticky z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8"
     >
       <div className="flex items-center justify-start w-full gap-4">
         <button
           onClick={openMenu}
-          className="relative flex items-center justify-center w-8 h-8"
+          className="luxury-icon-btn relative flex items-center justify-center w-8 h-8"
         >
           <IconMenu />
         </button>
         <Form
           method="get"
           action={params.locale ? `/${params.locale}/search` : '/search'}
-          className="items-center gap-2 sm:flex"
+          className="items-center gap-2 flex relative"
         >
-          <button
-            type="submit"
-            className="relative flex items-center justify-center w-8 h-8"
-          >
-            <IconSearch />
-          </button>
           <Input
-            className={
-              isHome
-                ? 'focus:border-contrast/20 dark:focus:border-primary/20'
-                : 'focus:border-primary/20'
-            }
+            className="luxury-search-input !py-1"
             type="search"
             variant="minisearch"
             placeholder="Search"
             name="q"
           />
+          <button
+            type="submit"
+            className="absolute right-3 top-1/2 -translate-y-1/2 luxury-icon-btn focus:outline-none"
+          >
+            <IconSearch className="w-4 h-4" />
+          </button>
         </Form>
       </div>
 
@@ -240,14 +228,14 @@ function MobileHeader({
         <img
           src="/vanu_glams_logo.webp"
           alt="Vanue Glams"
-          className="h-8 w-auto object-contain"
+          className="h-8 w-auto object-contain transition-transform duration-300 hover:scale-105"
           width={128}
           height={32}
         />
       </Link>
 
       <div className="flex items-center justify-end w-full gap-4">
-        <AccountLink className="relative flex items-center justify-center w-8 h-8" />
+        <AccountLink className="luxury-icon-btn relative flex items-center justify-center w-8 h-8" />
         <CartCount isHome={isHome} openCart={openCart} />
       </div>
     </header>
@@ -266,29 +254,24 @@ function DesktopHeader({
   title: string;
 }) {
   const params = useParams();
-  const {y} = useWindowScroll();
+  const { y } = useWindowScroll();
   return (
     <header
       role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } ${
-        !isHome && y > 50 && ' shadow-lightHeader'
-      } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
+      className={`${y > 50 ? 'luxury-header-scrolled' : ''
+        } luxury-header hidden h-nav lg:flex items-center sticky transition-all duration-300 z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
     >
-      <div className="flex gap-12">
-        <Link className="font-bold flex items-center" to="/" prefetch="intent">
+      <div className="flex gap-12 items-center">
+        <Link className="flex items-center" to="/" prefetch="intent">
           <img
             src="/vanu_glams_logo.webp"
             alt="Vanue Glams"
-            className="h-9 w-auto object-contain transition-transform duration-300 hover:scale-105"
+            className="h-10 w-auto object-contain transition-transform duration-300 hover:scale-105"
             width={144}
             height={36}
           />
         </Link>
-        <nav className="flex gap-8">
+        <nav className="flex gap-8 items-center">
           {/* Top level menu items */}
           {(menu?.items || []).map((item) => (
             <Link
@@ -296,8 +279,8 @@ function DesktopHeader({
               to={item.to}
               target={item.target}
               prefetch="intent"
-              className={({isActive}) =>
-                isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+              className={({ isActive }) =>
+                `${isActive ? 'active' : ''} luxury-nav-link`
               }
             >
               {getCosmeticMenuTitle(item.title)}
@@ -305,38 +288,34 @@ function DesktopHeader({
           ))}
         </nav>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-4">
         <Form
           method="get"
           action={params.locale ? `/${params.locale}/search` : '/search'}
-          className="flex items-center gap-2"
+          className="flex items-center relative"
         >
           <Input
-            className={
-              isHome
-                ? 'focus:border-contrast/20 dark:focus:border-primary/20'
-                : 'focus:border-primary/20'
-            }
+            className="luxury-search-input"
             type="search"
             variant="minisearch"
-            placeholder="Search"
+            placeholder="Search..."
             name="q"
           />
           <button
             type="submit"
-            className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+            className="absolute right-3 top-1/2 -translate-y-1/2 luxury-icon-btn focus:outline-none"
           >
-            <IconSearch />
+            <IconSearch className="w-4 h-4" />
           </button>
         </Form>
-        <AccountLink className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5" />
+        <AccountLink className="luxury-icon-btn relative flex items-center justify-center w-8 h-8" />
         <CartCount isHome={isHome} openCart={openCart} />
       </div>
     </header>
   );
 }
 
-function AccountLink({className}: {className?: string}) {
+function AccountLink({ className }: { className?: string }) {
   const rootData = useRouteLoaderData<RootLoader>('root');
   const isLoggedIn = rootData?.isLoggedIn;
 
@@ -389,40 +368,36 @@ function Badge({
 
   const BadgeCounter = useMemo(
     () => (
-      <>
-        <IconBag />
-        <div
-          className={`${
-            dark
-              ? 'text-primary bg-contrast dark:text-contrast dark:bg-primary'
-              : 'text-contrast bg-primary'
-          } absolute bottom-1 right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
-        >
-          <span>{count || 0}</span>
-        </div>
-      </>
+      <div className="luxury-badge flex items-center justify-center w-8 h-8">
+        <IconBag className="w-4 h-4" />
+        {count > 0 && (
+          <div className="luxury-badge-count">
+            <span>{count}</span>
+          </div>
+        )}
+      </div>
     ),
-    [count, dark],
+    [count],
   );
 
   return isHydrated ? (
     <button
       onClick={openCart}
-      className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative flex items-center justify-center focus:outline-none"
     >
       {BadgeCounter}
     </button>
   ) : (
     <Link
       to="/cart"
-      className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative flex items-center justify-center focus:outline-none"
     >
       {BadgeCounter}
     </Link>
   );
 }
 
-function Footer({menu}: {menu?: EnhancedMenu}) {
+function Footer({ menu }: { menu?: EnhancedMenu }) {
   const isHome = useIsHomePath();
   const itemsCount = menu
     ? menu?.items?.length + 1 > 4
@@ -450,7 +425,7 @@ function Footer({menu}: {menu?: EnhancedMenu}) {
   );
 }
 
-function FooterLink({item}: {item: ChildEnhancedMenuItem}) {
+function FooterLink({ item }: { item: ChildEnhancedMenuItem }) {
   if (item.to.startsWith('http')) {
     return (
       <a href={item.to} target={item.target} rel="noopener noreferrer">
@@ -466,7 +441,7 @@ function FooterLink({item}: {item: ChildEnhancedMenuItem}) {
   );
 }
 
-function FooterMenu({menu}: {menu?: EnhancedMenu}) {
+function FooterMenu({ menu }: { menu?: EnhancedMenu }) {
   const styles = {
     section: 'grid gap-4',
     nav: 'grid gap-2 pb-6',
@@ -477,7 +452,7 @@ function FooterMenu({menu}: {menu?: EnhancedMenu}) {
       {(menu?.items || []).map((item) => (
         <section key={item.id} className={styles.section}>
           <Disclosure>
-            {({open}) => (
+            {({ open }) => (
               <>
                 <Disclosure.Button className="text-left md:cursor-default">
                   <Heading className="flex justify-between" size="lead" as="h3">
@@ -491,9 +466,8 @@ function FooterMenu({menu}: {menu?: EnhancedMenu}) {
                 </Disclosure.Button>
                 {item?.items?.length > 0 ? (
                   <div
-                    className={`${
-                      open ? `max-h-48 h-fit` : `max-h-0 md:max-h-fit`
-                    } overflow-hidden transition-all duration-300`}
+                    className={`${open ? `max-h-48 h-fit` : `max-h-0 md:max-h-fit`
+                      } overflow-hidden transition-all duration-300`}
                   >
                     <Suspense data-comment="This suspense fixes a hydration bug in Disclosure.Panel with static prop">
                       <Disclosure.Panel static>
