@@ -469,6 +469,13 @@ shop-pay-button {
   border-bottom-color: rgba(184, 158, 116, 0.3) !important;
 }
 
-.h-10 {
-  height: 4.5rem;
+/* Logo sizing — scoped to logo images only */
+.luxury-logo-desktop {
+  height: 3.5rem; /* 56px - premium tall logo on desktop */
+  max-height: 3.5rem;
 }
+
+.luxury-logo-mobile {
+  height: 2.75rem; /* 44px - comfortable on mobile header */
+  max-height: 2.75rem;
+}

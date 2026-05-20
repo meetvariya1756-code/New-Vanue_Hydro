@@ -228,9 +228,9 @@ function MobileHeader({
         <img
           src="/vanu_glams_logo.webp"
           alt="Vanue Glams"
-          className="h-8 w-auto object-contain transition-transform duration-300 hover:scale-105"
-          width={128}
-          height={32}
+          className="luxury-logo-mobile w-auto object-contain transition-transform duration-300 hover:scale-105"
+          width={160}
+          height={48}
         />
       </Link>
 
@@ -266,9 +266,9 @@ function DesktopHeader({
           <img
             src="/vanu_glams_logo.webp"
             alt="Vanue Glams"
-            className="h-10 w-auto object-contain transition-transform duration-300 hover:scale-105"
-            width={144}
-            height={36}
+            className="luxury-logo-desktop w-auto object-contain transition-transform duration-300 hover:scale-105"
+            width={200}
+            height={56}
           />
         </Link>
         <nav className="flex gap-8 items-center">
