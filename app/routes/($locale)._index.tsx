@@ -13,6 +13,7 @@ import {VanueGlamsSection} from '~/components/VanueGlamsSection';
 import {VanueGlamsBenefitsSection} from '~/components/VanueGlamsBenefitsSection';
 import {FeaturedCollections} from '~/components/FeaturedCollections';
 import {ProductShowcase3D} from '~/components/homepage/ProductShowcase3D';
+import {CosmeticDuoSpotlight} from '~/components/CosmeticDuoSpotlight';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {getHeroPlaceholder} from '~/lib/placeholders';
 import {seoPayload} from '~/lib/seo.server';
@@ -218,6 +219,19 @@ export default function Homepage() {
                   products={response.products.nodes}
                 />
               );
+            }}
+          </Await>
+        </Suspense>
+      )}
+
+      {/* ── Cosmetic Duo Spotlight – 2 featured products animated ── */}
+      {featuredProducts && (
+        <Suspense fallback={<div className="h-96" />}>
+          <Await resolve={featuredProducts}>
+            {(response) => {
+              const nodes = response?.products?.nodes;
+              if (!nodes || nodes.length < 1) return null;
+              return <CosmeticDuoSpotlight products={nodes} />;
             }}
           </Await>
         </Suspense>
