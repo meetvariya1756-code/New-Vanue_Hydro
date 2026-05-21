@@ -10,9 +10,11 @@ import {Heading, Text} from '~/components/Text';
 import {ProductCard} from '~/components/ProductCard';
 import {Skeleton} from '~/components/Skeleton';
 import {usePrefixPathWithLocale} from '~/lib/utils';
+import type {CartRecommendedProduct} from '~/data/vanueProducts';
 
 interface FeaturedProductsProps {
   count: number;
+  fallbackProducts?: readonly CartRecommendedProduct[];
   heading: string;
   layout?: 'drawer' | 'page';
   onClose?: () => void;
@@ -33,6 +35,7 @@ interface FeaturedProductsProps {
  */
 export function FeaturedProducts({
   count = 4,
+  fallbackProducts,
   heading = 'Shop Best Sellers',
   layout = 'drawer',
   onClose,
@@ -44,7 +47,9 @@ export function FeaturedProducts({
   const queryString = useMemo(
     () =>
       Object.entries({count, sortKey, query, reverse})
-        .map(([key, val]) => (val ? `${key}=${val}` : null))
+        .map(([key, val]) =>
+          val ? `${key}=${encodeURIComponent(String(val))}` : null,
+        )
         .filter(Boolean)
         .join('&'),
     [count, sortKey, query, reverse],
@@ -70,6 +75,7 @@ export function FeaturedProducts({
       >
         <FeatureProductsContent
           count={count}
+          fallbackProducts={fallbackProducts}
           onClick={onClose}
           products={data?.products}
         />
@@ -83,10 +89,12 @@ export function FeaturedProducts({
  */
 function FeatureProductsContent({
   count = 4,
+  fallbackProducts,
   onClick,
   products,
 }: {
   count: FeaturedProductsProps['count'];
+  fallbackProducts?: FeaturedProductsProps['fallbackProducts'];
   products: Product[] | undefined;
   onClick?: () => void;
 }) {
@@ -106,6 +114,20 @@ function FeatureProductsContent({
   }
 
   if (products?.length === 0) {
+    if (fallbackProducts?.length) {
+      return (
+        <>
+          {fallbackProducts.map((product) => (
+            <FallbackProductCard
+              key={product.handle}
+              product={product}
+              onClick={onClick}
+            />
+          ))}
+        </>
+      );
+    }
+
     return <Text format>No products found.</Text>;
   }
 
@@ -120,5 +142,53 @@ function FeatureProductsContent({
         />
       ))}
     </>
+  );
+}
+
+function FallbackProductCard({
+  product,
+  onClick,
+}: {
+  product: CartRecommendedProduct;
+  onClick?: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <a onClick={onClick} href={`/products/${product.handle}`}>
+        <div className="grid gap-4">
+          <div className="card-image aspect-[4/5] bg-primary/5">
+            <img
+              className="object-cover w-full h-full fadeIn"
+              src={product.image}
+              alt={product.title}
+              loading="lazy"
+            />
+            <Text
+              as="label"
+              size="fine"
+              className="absolute top-0 right-0 m-4 text-right text-notice"
+            >
+              Sale
+            </Text>
+          </div>
+          <div className="grid gap-1">
+            <Text
+              className="w-full overflow-hidden whitespace-nowrap text-ellipsis"
+              as="h3"
+            >
+              {product.title}
+            </Text>
+            <div className="flex gap-4">
+              <Text className="flex gap-4">
+                Rs. {product.price}
+                <span className="opacity-50 strike">
+                  Rs. {product.compareAtPrice}
+                </span>
+              </Text>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
   );
 }

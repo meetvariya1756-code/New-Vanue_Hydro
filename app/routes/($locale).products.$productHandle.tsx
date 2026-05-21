@@ -1,4 +1,4 @@
-import {useRef, Suspense} from 'react';
+import {useRef, useState, Suspense} from 'react';
 import {Disclosure, Listbox} from '@headlessui/react';
 import {
   defer,
@@ -43,6 +43,45 @@ import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 
 export const headers = routeHeaders;
 
+const HAIR_OIL_TITLE =
+  'Vanue Glams Natural Hair Oil - Infused With 18 Botanical Oils & Extracts - Argan, Almond, Rosemary, Jojoba, Onion - Nourishes, Strengthens, And Promotes Hair Growth - 100ml';
+
+const HAIR_OIL_DESCRIPTION_HTML = `
+  <p>A premium blend of 18 natural oils and herbal extracts including Argan, Almond, Bhringraj, Hibiscus, Aloe Vera, and Curry Leaves. This lightweight, non-sticky hair oil reduces hair fall, strengthens roots, nourishes scalp, and promotes faster hair growth - giving you shinier, softer, and healthier hair with every drop.</p>
+  <p><strong>Manufacturer:</strong><br />DEV CARE<br />9/10, Sai Industrial Estate, Ta. Kamrej,<br />Dist. Surat - 394185, Gujarat, India.</p>
+  <p><strong>Marketed By:</strong><br />Vanue Glams<br />Surat, Gujarat, India.</p>
+  <p>Net Quantity: 100 ml<br />MRP: Rs. 599 (incl. of all taxes)<br />Customer Care: support@vanueglams.com | +91 6359565511</p>
+`;
+
+const HAIR_OIL_BENEFITS_HTML = `
+  <ul>
+    <li><strong>Reduces Hair Fall</strong> - Strengthens roots and minimizes breakage.</li>
+    <li><strong>Boosts Shine & Smoothness</strong> - Argan and Coconut Oil give silky softness.</li>
+    <li><strong>Nourishes Scalp Deeply</strong> - Aloe Vera, Hibiscus and Licorice soothe and hydrate.</li>
+    <li><strong>Promotes Hair Growth</strong> - Bhringraj and Curry Leaves stimulate new growth.</li>
+    <li><strong>Rich in Vitamin E</strong> - Repairs damage and improves overall hair texture.</li>
+    <li><strong>Mild Natural Fragrance</strong> - Refreshing aroma without heaviness.</li>
+  </ul>
+`;
+
+const HAIR_OIL_CARE_HTML = `
+  <ul>
+    <li>Take 2-3 teaspoons of oil and apply directly to the scalp and hair strands.</li>
+    <li>Massage gently with fingertips in circular motions for 5-10 minutes.</li>
+    <li>Leave it on for at least 1 hour, or overnight for best results.</li>
+    <li>Wash off with a mild shampoo.</li>
+    <li>Use 2-3 times a week for stronger, shinier, and healthier hair.</li>
+  </ul>
+`;
+
+const HAIR_OIL_MEDIA_IMAGES = [
+  'https://vanueglams.com/cdn/shop/files/22_2064f634-392d-4174-8994-b99c2c92ccdf.jpg?v=1756723678',
+  'https://vanueglams.com/cdn/shop/files/23_3dd00bee-0675-4185-807f-ca615f9ae666.jpg?v=1756723678',
+  'https://vanueglams.com/cdn/shop/files/25_285d6b56-942d-473a-94a3-4b911f2c4e33.jpg?v=1756723678',
+  'https://vanueglams.com/cdn/shop/files/27_6e990773-1864-4ea2-8d99-40d9706aca09.jpg?v=1756723678',
+  'https://vanueglams.com/cdn/shop/files/HAIROILBACK.jpg?v=1756723678',
+] as const;
+
 export async function loader(args: LoaderFunctionArgs) {
   const {productHandle} = args.params;
   invariant(productHandle, 'Missing productHandle param, check route filename');
@@ -74,9 +113,10 @@ function getMockProduct(handle: string): any {
     price = '699';
     image = 'https://cdn.shopify.com/s/files/1/0938/5974/1992/files/1_8e974002-6d60-4e59-b4ed-f797f73ed928.jpg?v=1757595405';
   } else if (handle.includes('hair-oil')) {
-    title = 'Natural Hair Oil – 100ml';
+    title = HAIR_OIL_TITLE;
     price = '599';
-    image = 'https://cdn.shopify.com/s/files/1/0938/5974/1992/files/22_2064f634-392d-4174-8994-b99c2c92ccdf.jpg?v=1756723678';
+    image =
+      'https://vanueglams.com/cdn/shop/files/22_2064f634-392d-4174-8994-b99c2c92ccdf.jpg?v=1756723678';
   } else if (handle.includes('shampoo')) {
     title = 'Dandruff Control Shampoo – 250ml';
     price = '699';
@@ -89,12 +129,16 @@ function getMockProduct(handle: string): any {
 
   const variantId = 'gid://shopify/ProductVariant/mock-' + Math.random().toString(36).substring(7);
 
+  const galleryImages = getFallbackGalleryImages(handle, image);
+
   return {
     id: 'gid://shopify/Product/mock-product',
     title,
     vendor: 'Vanue Glams',
     handle,
-    descriptionHtml: '<p>Experience the luxury of Vanue Glams. Enriched with botanical extracts and clinically proven actives to bring out your natural radiance. Cleanses, nourishes, and transforms—every wash, every day.</p>',
+    descriptionHtml: handle.includes('hair-oil')
+      ? HAIR_OIL_DESCRIPTION_HTML
+      : '<p>Experience the luxury of Vanue Glams. Enriched with botanical extracts and clinically proven actives to bring out your natural radiance. Cleanses, nourishes, and transforms every wash, every day.</p>',
     options: [{ name: 'Size', values: ['Standard'] }],
     selectedOrFirstAvailableVariant: {
       id: variantId,
@@ -106,16 +150,7 @@ function getMockProduct(handle: string): any {
       image: { url: image, altText: title, width: 800, height: 800 },
     },
     media: {
-      nodes: [
-        {
-          __typename: 'MediaImage',
-          id: 'gid://shopify/MediaImage/mock',
-          mediaContentType: 'IMAGE',
-          alt: title,
-          previewImage: { url: image },
-          image: { url: image, width: 800, height: 800, altText: title }
-        }
-      ]
+      nodes: createFallbackMediaNodes(galleryImages, title),
     },
     variants: {
       nodes: [
@@ -130,6 +165,67 @@ function getMockProduct(handle: string): any {
         }
       ]
     }
+  };
+}
+
+function getFallbackGalleryImages(handle: string, primaryImage: string) {
+  if (!handle.includes('hair-oil')) return [primaryImage];
+
+  return [...HAIR_OIL_MEDIA_IMAGES];
+}
+
+function createFallbackMediaNodes(images: string[], title: string) {
+  return [...new Set(images)].map((url, index) => ({
+    __typename: 'MediaImage',
+    id: `gid://shopify/MediaImage/fallback-${index}`,
+    mediaContentType: 'IMAGE',
+    alt: `${title} image ${index + 1}`,
+    previewImage: {url},
+    image: {url, width: 900, height: 900, altText: `${title} image ${index + 1}`},
+  }));
+}
+
+function withFallbackGallery(product: any) {
+  const mediaNodes = product?.media?.nodes ?? [];
+  if (product?.handle?.includes('hair-oil')) {
+    return {
+      ...product,
+      media: {
+        ...product.media,
+        nodes: createFallbackMediaNodes([...HAIR_OIL_MEDIA_IMAGES], product.title),
+      },
+    };
+  }
+
+  if (mediaNodes.length > 1) return product;
+
+  const primaryImage =
+    product?.selectedOrFirstAvailableVariant?.image?.url ||
+    mediaNodes[0]?.image?.url ||
+    mediaNodes[0]?.previewImage?.url;
+
+  if (!primaryImage) return product;
+
+  return {
+    ...product,
+    media: {
+      ...product.media,
+      nodes: createFallbackMediaNodes(
+        getFallbackGalleryImages(product.handle, primaryImage),
+        product.title,
+      ),
+    },
+  };
+}
+
+function withReferenceProductData(product: any) {
+  if (!product?.handle?.includes('hair-oil')) return product;
+
+  return {
+    ...product,
+    title: HAIR_OIL_TITLE,
+    vendor: 'Vanue Glams',
+    descriptionHtml: HAIR_OIL_DESCRIPTION_HTML,
   };
 }
 
@@ -154,7 +250,9 @@ async function loadCriticalData({
     }).catch(() => ({shop: {primaryDomain: {url: 'http://localhost:3000'}, shippingPolicy: null, refundPolicy: null}, product: null})),
   ]);
 
-  const finalProduct = product?.id ? product : getMockProduct(productHandle);
+  const finalProduct = withFallbackGallery(
+    withReferenceProductData(product?.id ? product : getMockProduct(productHandle)),
+  );
 
   const recommended = finalProduct.id === 'gid://shopify/Product/mock-product'
     ? Promise.resolve({ nodes: [] })
@@ -271,17 +369,40 @@ export default function Product() {
     price?.amount &&
     compareAtPrice?.amount &&
     price.amount < compareAtPrice.amount;
+  const detailSections = product.handle.includes('hair-oil')
+    ? [
+        {title: 'Benefits', content: HAIR_OIL_BENEFITS_HTML},
+        {title: 'Care Instructions', content: HAIR_OIL_CARE_HTML},
+        {title: 'Description', content: HAIR_OIL_DESCRIPTION_HTML},
+      ]
+    : [
+        ...(descriptionHtml
+          ? [{title: 'Product Details', content: descriptionHtml}]
+          : []),
+        ...(shippingPolicy?.body
+          ? [
+              {
+                title: 'Shipping',
+                content: getExcerpt(shippingPolicy.body),
+                learnMore: `/policies/${shippingPolicy.handle}`,
+              },
+            ]
+          : []),
+        ...(refundPolicy?.body
+          ? [
+              {
+                title: 'Returns',
+                content: getExcerpt(refundPolicy.body),
+                learnMore: `/policies/${refundPolicy.handle}`,
+              },
+            ]
+          : []),
+      ];
 
   return (
     <>
       {/* ── Breadcrumb ── */}
-      <div
-        style={{
-          background: '#FAF9F7',
-          borderBottom: '1px solid rgba(201,169,110,0.1)',
-          padding: '0.75rem 1.5rem',
-        }}
-      >
+      <div className="luxury-product-breadcrumb" style={{padding: '0.75rem 1.5rem'}}>
         <div
           className="max-w-7xl mx-auto"
           style={{
@@ -303,50 +424,44 @@ export default function Product() {
       </div>
 
       {/* ── Main Product Grid ── */}
-      <Section className="px-0 md:px-8 lg:px-12" style={{background: '#FAF9F7'}}>
-        <div className="grid items-start md:gap-6 lg:gap-20 md:grid-cols-2 lg:grid-cols-3">
+      <Section className="luxury-product-shell px-4 py-8 md:px-8 md:py-12 lg:px-12">
+        <div className="luxury-product-grid mx-auto max-w-7xl">
           {/* Gallery */}
           <ProductGallery
             media={media.nodes}
-            className="w-full lg:col-span-2"
+            className="w-full"
           />
 
           {/* Info Panel */}
-          <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
+          <div>
             <section
-              className="flex flex-col w-full max-w-xl gap-6 p-6 md:mx-auto md:max-w-sm md:px-0"
-              style={{paddingTop: '2rem'}}
+              className="luxury-product-panel flex w-full flex-col gap-6 p-5 md:p-7"
             >
               {/* Eyebrow */}
-              <div>
+              <div className="grid gap-4">
                 <span
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '10px', fontWeight: 600,
-                    letterSpacing: '0.25em', textTransform: 'uppercase',
-                    color: '#c9a96e', display: 'block', marginBottom: '0.5rem',
-                  }}
+                  className="luxury-product-kicker"
                 >
                   {vendor || 'Vanue Glams'}
                 </span>
 
                 {/* Title */}
-                <h1
-                  style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    fontSize: 'clamp(1.4rem, 3vw, 1.75rem)',
-                    fontWeight: 400, lineHeight: 1.25,
-                    color: '#1a1a1a', marginBottom: '0.75rem',
-                  }}
-                >
+                <h1 className="luxury-product-title">
                   {title}
                 </h1>
+
+                {descriptionHtml && (
+                  <div
+                    className="luxury-product-description line-clamp-4"
+                    dangerouslySetInnerHTML={{__html: descriptionHtml}}
+                  />
+                )}
 
                 {/* Stars + B1G1 badge */}
                 <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '2px'}}>
                     {[1,2,3,4,5].map((s) => (
-                      <svg key={s} width="13" height="13" viewBox="0 0 24 24" fill="#c9a96e">
+                      <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill="#d4af37">
                         <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
                       </svg>
                     ))}
@@ -374,19 +489,15 @@ export default function Product() {
 
               {/* Price */}
               <div
+                className="luxury-price-panel"
                 style={{
                   display: 'flex', alignItems: 'baseline', gap: '0.75rem',
-                  padding: '1rem 0',
-                  borderTop: '1px solid rgba(201,169,110,0.12)',
-                  borderBottom: '1px solid rgba(201,169,110,0.12)',
+                  padding: '1rem',
                 }}
               >
                 {price && (
                   <span
-                    style={{
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      fontSize: '1.75rem', fontWeight: 400, color: '#1a1a1a',
-                    }}
+                    className="luxury-price"
                   >
                     Rs. {parseFloat(price.amount).toFixed(0)}
                   </span>
@@ -416,8 +527,32 @@ export default function Product() {
                 )}
               </div>
 
+              <div className="luxury-promise-panel grid gap-3 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="luxury-product-kicker">Availability</span>
+                  <span
+                    className="text-sm font-medium"
+                    style={{
+                      color: selectedVariant?.availableForSale
+                        ? '#2f6f44'
+                        : '#9a2f2f',
+                    }}
+                  >
+                    {selectedVariant?.availableForSale ? 'In stock' : 'Sold out'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-[0.12em] text-[#6b6158]">
+                  <span>Free shipping</span>
+                  <span>Easy returns</span>
+                  <span>Secure pay</span>
+                </div>
+              </div>
+
               {/* Product Form */}
               <ProductForm
+                amazonUrl={`https://www.amazon.in/s?k=${encodeURIComponent(
+                  title,
+                )}`}
                 productOptions={productOptions}
                 selectedVariant={selectedVariant}
                 storeDomain={storeDomain}
@@ -425,29 +560,20 @@ export default function Product() {
 
               {/* Details accordions */}
               <div className="grid gap-3 pt-2">
-                {descriptionHtml && (
-                  <ProductDetail title="Product Details" content={descriptionHtml} />
-                )}
-                {shippingPolicy?.body && (
+                {detailSections.map((section) => (
                   <ProductDetail
-                    title="Shipping"
-                    content={getExcerpt(shippingPolicy.body)}
-                    learnMore={`/policies/${shippingPolicy.handle}`}
+                    key={section.title}
+                    title={section.title}
+                    content={section.content}
+                    learnMore={'learnMore' in section ? section.learnMore : undefined}
                   />
-                )}
-                {refundPolicy?.body && (
-                  <ProductDetail
-                    title="Returns"
-                    content={getExcerpt(refundPolicy.body)}
-                    learnMore={`/policies/${refundPolicy.handle}`}
-                  />
-                )}
+                ))}
               </div>
 
               {/* Trust row */}
               <div
                 style={{
-                  display: 'flex', gap: '1rem', flexWrap: 'wrap',
+                  display: 'none', gap: '1rem', flexWrap: 'wrap',
                   padding: '1rem 0',
                   borderTop: '1px solid rgba(201,169,110,0.1)',
                 }}
@@ -511,15 +637,18 @@ export default function Product() {
 
 
 export function ProductForm({
+  amazonUrl,
   productOptions,
   selectedVariant,
   storeDomain,
 }: {
+  amazonUrl: string;
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
   storeDomain: string;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [quantity, setQuantity] = useState(1);
 
   const isOutOfStock = !selectedVariant?.availableForSale;
 
@@ -529,7 +658,7 @@ export function ProductForm({
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
   return (
-    <div className="grid gap-10">
+    <div className="grid gap-7">
       <div className="grid gap-4">
         {productOptions.map((option, optionIndex) => (
           <div
@@ -645,7 +774,27 @@ export function ProductForm({
           </div>
         ))}
         {selectedVariant && (
-          <div className="grid items-stretch gap-3">
+          <div className="grid items-stretch gap-4">
+            <div className="luxury-quantity-row">
+              <span className="luxury-product-kicker">Quantity</span>
+              <div className="luxury-quantity-control">
+                <button
+                  type="button"
+                  aria-label="Decrease quantity"
+                  onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                >
+                  -
+                </button>
+                <span>{quantity}</span>
+                <button
+                  type="button"
+                  aria-label="Increase quantity"
+                  onClick={() => setQuantity((current) => current + 1)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
             {isOutOfStock ? (
               <button
                 disabled
@@ -664,10 +813,11 @@ export function ProductForm({
                 lines={[
                   {
                     merchandiseId: selectedVariant.id!,
-                    quantity: 1,
+                    quantity,
                   },
                 ]}
                 variant="primary"
+                className="luxury-cta"
                 data-test="add-to-cart"
                 style={{
                   width: '100%', padding: '1rem',
@@ -684,40 +834,34 @@ export function ProductForm({
             )}
             {!isOutOfStock && (
               <>
+                <AddToCartButton
+                  lines={[
+                    {
+                      merchandiseId: selectedVariant.id!,
+                      quantity,
+                    },
+                  ]}
+                  variant="secondary"
+                  className="luxury-cta luxury-cta--gold"
+                >
+                  <span>Buy Now</span>
+                </AddToCartButton>
                 <ShopPayButton
                   width="100%"
                   variantIds={[selectedVariant?.id!]}
                   storeDomain={storeDomain}
                 />
-                
-                {/* Available on Amazon */}
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex items-center justify-center gap-2 w-full py-4 mt-2 overflow-hidden bg-white border border-[#ff9900] rounded-sm shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#e38800]"
-                >
-                  <div className="absolute inset-0 w-full h-full bg-[#ff9900]/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                  
-                  <span className="relative font-['Inter',sans-serif] text-[13px] font-semibold text-[#1a1a1a]">
-                    Available on
-                  </span>
-                  
-                  <div className="relative flex items-center h-5">
-                    {/* Amazon Logo SVG */}
-                    <svg viewBox="0 0 100 30" height="24" className="text-[#1a1a1a] translate-y-[2px] group-hover:scale-105 transition-transform duration-300">
-                      <path fill="currentColor" d="M63.5,10.6c-0.2-0.3-0.5-0.5-0.9-0.5c-0.6,0-1,0.5-1,1.1v9.3c-1.1,0.8-2.6,1.4-4.5,1.4c-2,0-3.3-0.5-4-1.5 c-0.5-0.8-0.8-2-0.8-3.6c0-2.4,0.6-3.8,1.6-4.6c1.1-0.9,2.9-1.3,5.1-1.3c0.9,0,1.7,0.1,2.5,0.3V9.8c0-1.8-0.3-3.1-1.1-3.9 c-0.8-0.8-2-1.2-3.8-1.2c-1.4,0-2.5,0.2-3.4,0.6c-0.6,0.3-1,0.9-1,1.5c0,0.5,0.3,1,0.8,1.1c0.8,0.3,1.9,0.5,3.1,0.5 c0.8,0,1.4,0.2,1.8,0.5c0.4,0.3,0.5,0.8,0.5,1.4v0.5c-0.7-0.1-1.4-0.2-2.1-0.2c-3.1,0-5.5,0.7-7.2,2c-1.6,1.3-2.4,3.2-2.4,5.8 c0,2.1,0.5,3.8,1.5,4.9c1.2,1.3,3,2,5.2,2c2.2,0,4.2-0.8,5.8-2.5v1.8c0,0.5,0.4,0.9,0.9,0.9h1.7c0.5,0,0.9-0.4,0.9-0.9V11.2 C63.7,10.9,63.6,10.7,63.5,10.6z M60.1,16.4c-0.4,1.8-1.4,3.5-3.1,4.7c-0.6,0.4-1.3,0.6-2,0.6c-1,0-1.7-0.3-2.1-0.8 c-0.4-0.5-0.6-1.3-0.6-2.3c0-1.2,0.3-2,0.9-2.5c0.7-0.6,1.8-0.9,3.5-0.9c1,0,2.2,0.1,3.4,0.4V16.4z"/>
-                      <path fill="currentColor" d="M37.8,4.9c-0.5,0-0.9,0.4-0.9,0.9v1.6C35.2,5.8,33.1,5,30.8,5c-2.3,0-4.2,0.8-5.5,2.3c-1.4,1.6-2.1,3.7-2.1,6.3 c0,2.6,0.7,4.8,2.1,6.3c1.3,1.5,3.2,2.3,5.5,2.3c2.3,0,4.4-0.8,6.1-2.4v1.6c0,0.5,0.4,0.9,0.9,0.9h1.8c0.5,0,0.9-0.4,0.9-0.9V5.8 c0-0.5-0.4-0.9-0.9-0.9H37.8z M36.8,13.6c0,2.1-0.5,3.6-1.5,4.6c-1,1-2.2,1.5-3.7,1.5c-1.5,0-2.8-0.5-3.7-1.5 c-1-1-1.5-2.6-1.5-4.6s0.5-3.6,1.5-4.6c1-1,2.2-1.5,3.7-1.5c1.5,0,2.8,0.5,3.7,1.5C36.3,10,36.8,11.6,36.8,13.6z"/>
-                      <path fill="currentColor" d="M85.9,4.9c-0.5,0-0.9,0.4-0.9,0.9v1.6C83.3,5.8,81.2,5,78.9,5c-2.3,0-4.2,0.8-5.5,2.3c-1.4,1.6-2.1,3.7-2.1,6.3 c0,2.6,0.7,4.8,2.1,6.3c1.3,1.5,3.2,2.3,5.5,2.3c2.3,0,4.4-0.8,6.1-2.4v1.6c0,0.5,0.4,0.9,0.9,0.9h1.8c0.5,0,0.9-0.4,0.9-0.9V5.8 c0-0.5-0.4-0.9-0.9-0.9H85.9z M84.9,13.6c0,2.1-0.5,3.6-1.5,4.6c-1,1-2.2,1.5-3.7,1.5c-1.5,0-2.8-0.5-3.7-1.5 c-1-1-1.5-2.6-1.5-4.6s0.5-3.6,1.5-4.6c1-1,2.2-1.5,3.7-1.5c1.5,0,2.8,0.5,3.7,1.5C84.4,10,84.9,11.6,84.9,13.6z"/>
-                      <path fill="currentColor" d="M51.9,4.9h-1.8c-0.2,0-0.4,0.1-0.6,0.3L45.2,11L41,5.2c-0.2-0.2-0.4-0.3-0.6-0.3h-1.8c-0.4,0-0.6,0.4-0.4,0.7 l6.2,8.6l-6.6,9.5c-0.2,0.3-0.1,0.7,0.3,0.7h1.9c0.2,0,0.5-0.1,0.6-0.3l4.7-6.8l4.7,6.8c0.2,0.2,0.4,0.3,0.6,0.3h1.8 c0.4,0,0.6-0.4,0.4-0.7l-6.6-9.5l6.1-8.6C52.5,5.3,52.3,4.9,51.9,4.9z"/>
-                      <path fill="currentColor" d="M20.2,4.9h-1.7c-0.3,0-0.5,0.1-0.7,0.4L10,21.5c-0.1,0.3,0.1,0.7,0.4,0.7h1.9c0.2,0,0.4-0.1,0.5-0.3 l1.6-3.8h7.9l1.6,3.8c0.1,0.2,0.3,0.3,0.5,0.3h1.9c0.4,0,0.6-0.4,0.5-0.7L18.9,5.3C18.8,5,18.5,4.9,18.2,4.9z M16.9,15.6h-5.4 l2.7-6.4L16.9,15.6z"/>
-                      <path fill="currentColor" d="M100.8,4.9h-1.7c-0.2,0-0.4,0.1-0.5,0.3l-5.6,8.1v-7.6c0-0.5-0.4-0.9-0.9-0.9h-1.8c-0.5,0-0.9,0.4-0.9,0.9v16 c0,0.5,0.4,0.9,0.9,0.9h1.8c0.5,0,0.9-0.4,0.9-0.9v-7.6l5.6,8.1c0.2,0.2,0.4,0.3,0.5,0.3h1.7c0.4,0,0.6-0.4,0.4-0.7L94.7,13l6.4-7.4 C101.4,5.3,101.2,4.9,100.8,4.9z"/>
-                      {/* Arrow */}
-                      <path fill="#ff9900" d="M64.6,23.3c-7.3,3.7-16.7,5.4-25.7,5.4c-11.4,0-22.3-3.1-30.8-8.9c-1.1-0.7-0.7-2,0.5-1.5 c10.3,4.6,22,6.9,33.5,6.9c8.6,0,16.8-1.5,23.1-4.2C66.5,20.6,65.9,22.6,64.6,23.3z"/>
-                      <path fill="#ff9900" d="M68.7,21.9c0.1-1.3-1.6-2-3-1.4c-1.4,0.6-2.5,2-2.1,3.4c0.2,0.6,0.6,1.1,1,1.5c-0.5-0.5-1.1-1-1.6-1.5 c-0.6-0.6-0.9-1.5-0.6-2.3c0.3-0.8,1.1-1.2,1.9-1.2c1,0,2.1,0.6,2.6,1.5C67.4,22.9,68.6,23.2,68.7,21.9z"/>
-                    </svg>
-                  </div>
-                </a>
+                <div className="luxury-amazon-card">
+                  <span>Available on</span>
+                  <a
+                    href={amazonUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="luxury-amazon-link"
+                  >
+                    Amazon
+                  </a>
+                </div>
               </>
             )}
           </div>

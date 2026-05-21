@@ -23,6 +23,10 @@ import {Link} from '~/components/Link';
 import {IconRemove} from '~/components/Icon';
 import {FeaturedProducts} from '~/components/FeaturedProducts';
 import {getInputStyleClasses} from '~/lib/utils';
+import {
+  CART_RECOMMENDED_PRODUCT_HANDLES,
+  CART_RECOMMENDED_PRODUCTS,
+} from '~/data/vanueProducts';
 
 type Layouts = 'page' | 'drawer';
 
@@ -463,9 +467,13 @@ export function CartEmpty({
       <section className="grid gap-8 pt-16">
         <FeaturedProducts
           count={4}
+          fallbackProducts={CART_RECOMMENDED_PRODUCTS}
           heading="Shop Best Sellers"
           layout={layout}
           onClose={onClose}
+          query={CART_RECOMMENDED_PRODUCT_HANDLES.map(
+            (handle) => `handle:'${handle}'`,
+          ).join(' OR ')}
           sortKey="BEST_SELLING"
         />
       </section>
