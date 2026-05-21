@@ -54,33 +54,81 @@ export default function Policies() {
 
   return (
     <>
-      <Section
-        padding="all"
-        display="flex"
-        className="flex-col items-baseline w-full gap-8 md:flex-row"
+      {/* Page Hero */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #FAF9F7 0%, #F5EFE6 50%, #EDE6DA 100%)',
+          padding: '4rem 1.5rem 3rem',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <PageHeader
-          heading={policy.title}
-          className="grid items-start flex-grow gap-4 md:sticky top-36 md:w-5/12"
-        >
-          <Button
-            className="justify-self-start"
-            variant="inline"
-            to={'/policies'}
+        <div
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.1), transparent 60%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{position: 'relative', zIndex: 1}}>
+          <span
+            style={{
+              fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600,
+              letterSpacing: '0.25em', textTransform: 'uppercase',
+              color: '#c9a96e', display: 'block', marginBottom: '0.5rem',
+            }}
           >
-            &larr; Back to Policies
-          </Button>
-        </PageHeader>
-        <div className="flex-grow w-full md:w-7/12">
-          <div
-            dangerouslySetInnerHTML={{__html: policy.body}}
-            className="prose dark:prose-invert"
-          />
+            Vanue Glams
+          </span>
+          <h1
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 400,
+              color: '#1a1a1a',
+            }}
+          >
+            {policy.title}
+          </h1>
         </div>
-      </Section>
+      </section>
+
+      {/* Content */}
+      <section
+        style={{
+          maxWidth: '800px', margin: '0 auto',
+          padding: '4rem 1.5rem',
+        }}
+      >
+        {/* Back link */}
+        <Button
+          style={{
+            fontFamily: 'Inter, sans-serif', fontSize: '11px',
+            fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase',
+            color: '#c9a96e', textDecoration: 'none',
+            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+            marginBottom: '2rem', background: 'none', border: 'none',
+            padding: 0, cursor: 'pointer',
+          }}
+          variant="inline"
+          to={'/policies'}
+        >
+          ← Back to Policies
+        </Button>
+
+        <div
+          dangerouslySetInnerHTML={{__html: policy.body}}
+          className="prose"
+          style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '0.9rem', lineHeight: 1.8, color: '#4a4540',
+          }}
+        />
+      </section>
     </>
   );
 }
+
 
 const POLICY_CONTENT_QUERY = `#graphql
   fragment PolicyHandle on ShopPolicy {

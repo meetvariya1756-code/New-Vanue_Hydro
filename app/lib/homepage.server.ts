@@ -1,4 +1,13 @@
-import type {CollectionContentFragment} from 'storefrontapi.generated';
+// CollectionContentFragment type defined inline (generated type was removed)
+type CollectionContentFragment = {
+  id?: string;
+  handle?: string;
+  heading?: {value?: string | null} | null;
+  byline?: {value?: string | null} | null;
+  cta?: {value?: string | null} | null;
+  spread?: {reference?: {image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null} | null} | null;
+  spreadSecondary?: {reference?: {image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null} | null} | null;
+};
 
 /**
  * Shop metafields (namespace: homepage) — create in Shopify Admin:

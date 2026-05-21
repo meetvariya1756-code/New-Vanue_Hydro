@@ -53,7 +53,7 @@ export function VanueGlamsSection() {
         <div className="vanue-glams-section__visual">
           <div className="vanue-glams-section__card">
             <img
-              src="/vanue_serum.png"
+              src="https://cdn.shopify.com/s/files/1/0938/5974/1992/files/25_afb785c0-011d-43a9-b6e5-4ef98ebcf8cf.jpg?v=1756558399"
               alt="Vanue Glams Serum"
               className="vanue-glams-section__product-img"
               loading="lazy"

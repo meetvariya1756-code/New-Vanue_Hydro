@@ -1,6 +1,16 @@
 import {Image} from '@shopify/hydrogen';
 
-import type {HomepageFeaturedCollectionsQuery} from 'storefrontapi.generated';
+// HomepageFeaturedCollectionsQuery type defined inline (generated type was removed)
+type HomepageFeaturedCollectionsQuery = {
+  collections: {
+    nodes: Array<{
+      id: string;
+      title: string;
+      handle: string;
+      image?: {url: string; altText?: string | null; width?: number | null; height?: number | null} | null;
+    }>;
+  };
+};
 import {Heading, Section} from '~/components/Text';
 import {Grid} from '~/components/Grid';
 import {Link} from '~/components/Link';

@@ -149,17 +149,71 @@ export default function Collection() {
 
   return (
     <>
-      <PageHeader heading={collection.title}>
-        {collection?.description && (
-          <div className="flex items-baseline justify-between w-full">
-            <div>
-              <Text format width="narrow" as="p" className="inline-block">
-                {collection.description}
-              </Text>
-            </div>
-          </div>
-        )}
-      </PageHeader>
+      {/* ── Collection Hero ── */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #FAF9F7 0%, #F5EFE6 50%, #EDE6DA 100%)',
+          padding: '4rem 1.5rem 3rem',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.1), transparent 60%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{position: 'relative', zIndex: 1}}>
+          <span
+            style={{
+              fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600,
+              letterSpacing: '0.25em', textTransform: 'uppercase',
+              color: '#c9a96e', display: 'block', marginBottom: '0.75rem',
+            }}
+          >
+            Vanue Glams Collection
+          </span>
+          <h1
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 400,
+              color: '#1a1a1a', marginBottom: '0.75rem',
+            }}
+          >
+            {collection.title}
+          </h1>
+          {collection?.description && (
+            <p
+              style={{
+                fontFamily: 'Inter, sans-serif', fontSize: '0.95rem',
+                lineHeight: 1.7, color: '#6b6158',
+                maxWidth: '500px', margin: '0 auto 1rem',
+              }}
+            >
+              {collection.description}
+            </p>
+          )}
+          <span
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              background: 'rgba(201,169,110,0.1)',
+              border: '1px solid rgba(201,169,110,0.25)',
+              borderRadius: '100px', padding: '0.35rem 1rem',
+              fontFamily: 'Inter, sans-serif', fontSize: '11px',
+              fontWeight: 600, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: '#8a7050',
+            }}
+          >
+            <span style={{color: '#c9a96e'}}>✦</span>
+            Buy 1 Get 1 Free on All Products
+          </span>
+        </div>
+      </section>
+
+      {/* ── Filter / Sort + Grid ── */}
       <Section>
         <SortFilter
           filters={collection.products.filters as Filter[]}
@@ -189,7 +243,7 @@ export default function Collection() {
                   hasNextPage={hasNextPage}
                   state={state}
                 />
-                <div className="flex items-center justify-center mt-6">
+                <div className="flex items-center justify-center mt-8">
                   <Button
                     ref={ref}
                     as={NextLink}
@@ -213,6 +267,51 @@ export default function Collection() {
         }}
       />
     </>
+  );
+}
+
+function VanueProductCard({product, index}: {product: any; index: number}) {
+  const variants: any[] = product.variants?.nodes ?? product.variants?.edges?.map((e: any) => e.node) ?? [];
+  const firstVariant = variants[0];
+  const image = firstVariant?.image;
+  const price = firstVariant?.price;
+
+  return (
+    <a
+      href={`/products/${product.handle}`}
+      style={{textDecoration: 'none'}}
+    >
+      <div className="vg-product-card">
+        <div className="vg-product-card__img-wrap">
+          {image && (
+            <img
+              src={image.url}
+              alt={image.altText || product.title}
+              loading={index < 4 ? 'eager' : 'lazy'}
+              style={{width: '100%', height: '100%', objectFit: 'cover'}}
+            />
+          )}
+          <span className="vg-product-card__badge">Buy 1 Get 1 Free</span>
+          <div className="vg-product-card__quick-add">Shop Now →</div>
+        </div>
+        <div className="vg-product-card__body">
+          {/* Stars */}
+          <div className="vg-product-card__stars">
+            {[1,2,3,4,5].map((s) => (
+              <svg key={s} className="vg-product-card__star" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
+              </svg>
+            ))}
+          </div>
+          <h3 className="vg-product-card__title">{product.title}</h3>
+          {price && (
+            <p className="vg-product-card__price">
+              {price.currencyCode === 'INR' ? 'Rs.' : ''} {price.amount ? parseFloat(price.amount).toFixed(0) : ''}
+            </p>
+          )}
+        </div>
+      </div>
+    </a>
   );
 }
 
@@ -242,15 +341,19 @@ function ProductsLoadedOnScroll({
   }, [inView, navigate, state, nextPageUrl, hasNextPage]);
 
   return (
-    <Grid layout="products" data-test="product-grid">
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '1.25rem',
+      }}
+      className="sm:grid-cols-3 lg:grid-cols-4"
+      data-test="product-grid"
+    >
       {nodes.map((product: any, i: number) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          loading={getImageLoadingPriority(i)}
-        />
+        <VanueProductCard key={product.id} product={product} index={i} />
       ))}
-    </Grid>
+    </div>
   );
 }
 

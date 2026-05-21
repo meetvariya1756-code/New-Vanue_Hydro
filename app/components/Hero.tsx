@@ -6,7 +6,17 @@ import type {
   Video as MediaVideo,
 } from '@shopify/hydrogen/storefront-api-types';
 
-import type {CollectionContentFragment} from 'storefrontapi.generated';
+// CollectionContentFragment type defined inline (generated type was removed)
+type CollectionContentFragment = {
+  id: string;
+  handle: string;
+  title?: string;
+  heading?: {value?: string | null} | null;
+  byline?: {value?: string | null} | null;
+  cta?: {value?: string | null} | null;
+  spread?: {reference?: ({image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null} | {image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null}) | null} | null;
+  spreadSecondary?: {reference?: ({image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null} | {image?: {url?: string | null} | null; previewImage?: {url?: string | null} | null; alt?: string | null}) | null} | null;
+};
 import {Heading, Text} from '~/components/Text';
 import {Link} from '~/components/Link';
 
