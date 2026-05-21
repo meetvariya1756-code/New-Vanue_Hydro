@@ -183,15 +183,34 @@ export default function Homepage() {
       )}
 
       {featuredProducts && (
-        <Suspense>
+        <Suspense fallback={
+          <section className="homepage-products px-6 py-24 md:px-12 lg:px-20 max-w-7xl mx-auto">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]" style={{color: 'var(--homepage-accent, #B89E74)'}}>The Collection</p>
+            <h2 className="font-serif text-3xl font-light tracking-wide md:text-5xl mb-8">Featured Products</h2>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[4/5] bg-primary/10 rounded-2xl mb-4" />
+                  <div className="h-4 bg-primary/10 rounded mb-2" />
+                  <div className="h-3 bg-primary/10 rounded w-1/3" />
+                </div>
+              ))}
+            </div>
+          </section>
+        }>
           <Await resolve={featuredProducts}>
             {(response) => {
               if (
                 !response ||
                 !response?.products ||
-                !response?.products?.nodes
+                !response?.products?.nodes ||
+                response.products.nodes.length === 0
               ) {
-                return <></>;
+                return (
+                  <section className="homepage-products px-6 py-24 md:px-12 lg:px-20 max-w-7xl mx-auto">
+                    <p className="text-primary/50">No products found in your Shopify store yet.</p>
+                  </section>
+                );
               }
               return (
                 <ProductShowcase3D
