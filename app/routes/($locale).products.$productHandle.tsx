@@ -32,7 +32,9 @@ import {Button} from '~/components/Button';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {Skeleton} from '~/components/Skeleton';
 import {ProductSwimlane} from '~/components/ProductSwimlane';
-import {ProductGallery} from '~/components/ProductGallery';
+import {ProductGallery} from '~/components/premium/ProductGallery';
+import {ProductInfo} from '~/components/premium/ProductInfo';
+import {ProductAccordion} from '~/components/premium/ProductAccordion';
 import {DynamicIngredients, type Ingredient} from '~/components/DynamicIngredients';
 import {IconCaret, IconCheck, IconClose} from '~/components/Icon';
 import {getExcerpt} from '~/lib/utils';
@@ -363,12 +365,6 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const price = selectedVariant?.price;
-  const compareAtPrice = selectedVariant?.compareAtPrice;
-  const isOnSale =
-    price?.amount &&
-    compareAtPrice?.amount &&
-    price.amount < compareAtPrice.amount;
   const detailSections = product.handle.includes('hair-oil')
     ? [
         {title: 'Benefits', content: HAIR_OIL_BENEFITS_HTML},
@@ -400,168 +396,41 @@ export default function Product() {
       ];
 
   return (
-    <>
+    <div className="bg-[#fdfbf7] min-h-screen text-[#1a1a1a]">
       {/* ── Breadcrumb ── */}
-      <div className="luxury-product-breadcrumb" style={{padding: '0.75rem 1.5rem'}}>
-        <div
-          className="max-w-7xl mx-auto"
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '11px',
-            letterSpacing: '0.08em',
-            color: '#9a9086',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <a href="/" style={{color: '#9a9086', textDecoration: 'none'}}>Home</a>
+      <div className="px-4 py-3 md:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 font-sans text-[10px] tracking-widest uppercase text-[#9a9086]">
+          <Link to="/" className="hover:text-[#1a1a1a] transition-colors">Home</Link>
           <span>›</span>
-          <a href="/collections/all" style={{color: '#9a9086', textDecoration: 'none'}}>Shop</a>
+          <Link to="/collections/all" className="hover:text-[#1a1a1a] transition-colors">Shop</Link>
           <span>›</span>
-          <span style={{color: '#1a1a1a'}}>{title}</span>
+          <span className="text-[#1a1a1a] truncate">{title}</span>
         </div>
       </div>
 
-      {/* ── Main Product Grid ── */}
-      <Section className="luxury-product-shell px-4 py-8 md:px-8 md:py-12 lg:px-12">
-        <div className="luxury-product-grid mx-auto max-w-7xl">
-          {/* Gallery */}
-          <ProductGallery
-            media={media.nodes}
-            className="w-full"
-          />
+      {/* ── Main Product Section ── */}
+      <section className="px-4 py-6 md:px-8 lg:px-12 lg:py-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            {/* Gallery / Left Side */}
+            <div className="lg:col-span-7 w-full">
+              <ProductGallery media={media.nodes} />
+            </div>
 
-          {/* Info Panel */}
-          <div>
-            <section
-              className="luxury-product-panel flex w-full flex-col gap-6 p-5 md:p-7"
-            >
-              {/* Eyebrow */}
-              <div className="grid gap-4">
-                <span
-                  className="luxury-product-kicker"
-                >
-                  {vendor || 'Vanue Glams'}
-                </span>
-
-                {/* Title */}
-                <h1 className="luxury-product-title">
-                  {title}
-                </h1>
-
-                {descriptionHtml && (
-                  <div
-                    className="luxury-product-description line-clamp-4"
-                    dangerouslySetInnerHTML={{__html: descriptionHtml}}
-                  />
-                )}
-
-                {/* Stars + B1G1 badge */}
-                <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap'}}>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '2px'}}>
-                    {[1,2,3,4,5].map((s) => (
-                      <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill="#d4af37">
-                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
-                      </svg>
-                    ))}
-                    <span style={{fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#8a7968', marginLeft: '4px'}}>
-                      (49 reviews)
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '4px',
-                      background: 'rgba(201,169,110,0.12)',
-                      border: '1px solid rgba(201,169,110,0.3)',
-                      borderRadius: '100px', padding: '2px 10px',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '10px', fontWeight: 600,
-                      letterSpacing: '0.1em', textTransform: 'uppercase',
-                      color: '#8a7050',
-                    }}
-                  >
-                    <span style={{color: '#c9a96e'}}>✦</span>
-                    Buy 1 Get 1 Free
-                  </span>
-                </div>
-              </div>
-
-              {/* Price */}
-              <div
-                className="luxury-price-panel"
-                style={{
-                  display: 'flex', alignItems: 'baseline', gap: '0.75rem',
-                  padding: '1rem',
-                }}
-              >
-                {price && (
-                  <span
-                    className="luxury-price"
-                  >
-                    Rs. {parseFloat(price.amount).toFixed(0)}
-                  </span>
-                )}
-                {isOnSale && compareAtPrice && (
-                  <span
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '1rem', color: '#9a9086',
-                      textDecoration: 'line-through',
-                    }}
-                  >
-                    Rs. {parseFloat(compareAtPrice.amount).toFixed(0)}
-                  </span>
-                )}
-                {isOnSale && (
-                  <span
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '11px', fontWeight: 700,
-                      color: '#fff', background: '#c9a96e',
-                      borderRadius: '100px', padding: '2px 8px',
-                    }}
-                  >
-                    SALE
-                  </span>
-                )}
-              </div>
-
-              <div className="luxury-promise-panel grid gap-3 p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="luxury-product-kicker">Availability</span>
-                  <span
-                    className="text-sm font-medium"
-                    style={{
-                      color: selectedVariant?.availableForSale
-                        ? '#2f6f44'
-                        : '#9a2f2f',
-                    }}
-                  >
-                    {selectedVariant?.availableForSale ? 'In stock' : 'Sold out'}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-[0.12em] text-[#6b6158]">
-                  <span>Free shipping</span>
-                  <span>Easy returns</span>
-                  <span>Secure pay</span>
-                </div>
-              </div>
-
-              {/* Product Form */}
-              <ProductForm
-                amazonUrl={`https://www.amazon.in/s?k=${encodeURIComponent(
-                  title,
-                )}`}
-                productOptions={productOptions}
+            {/* Info / Right Side */}
+            <div className="lg:col-span-5 w-full">
+              <ProductInfo
+                product={product}
                 selectedVariant={selectedVariant}
+                productOptions={productOptions}
                 storeDomain={storeDomain}
+                amazonUrl={`https://www.amazon.in/s?k=${encodeURIComponent(title)}`}
               />
-
-              {/* Details accordions */}
-              <div className="grid gap-3 pt-2">
+              
+              {/* Accordions */}
+              <div className="mt-8 border-t border-black/10">
                 {detailSections.map((section) => (
-                  <ProductDetail
+                  <ProductAccordion
                     key={section.title}
                     title={section.title}
                     content={section.content}
@@ -569,52 +438,29 @@ export default function Product() {
                   />
                 ))}
               </div>
-
-              {/* Trust row */}
-              <div
-                style={{
-                  display: 'none', gap: '1rem', flexWrap: 'wrap',
-                  padding: '1rem 0',
-                  borderTop: '1px solid rgba(201,169,110,0.1)',
-                }}
-              >
-                {[
-                  {icon: '🚚', text: 'Free Shipping'},
-                  {icon: '↩', text: 'Easy Returns'},
-                  {icon: '🔒', text: 'Secure Payment'},
-                ].map((item) => (
-                  <div
-                    key={item.text}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '0.4rem',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '11px', color: '#6b6158',
-                    }}
-                  >
-                    <span>{item.icon}</span>
-                    <span>{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* ── Dynamic Ingredients ── */}
-      <DynamicIngredients ingredients={INGREDIENTS_MAP[product.handle] || INGREDIENTS_MAP.default} />
+      <div className="mt-12 bg-white">
+        <DynamicIngredients ingredients={INGREDIENTS_MAP[product.handle] || INGREDIENTS_MAP.default} />
+      </div>
 
       {/* ── You May Also Like ── */}
-      <Suspense fallback={<Skeleton className="h-32" />}>
-        <Await
-          errorElement="There was a problem loading related products"
-          resolve={recommended}
-        >
-          {(products) => (
-            <ProductSwimlane title="You May Also Like" products={products} />
-          )}
-        </Await>
-      </Suspense>
+      <div className="bg-[#fdfbf7] py-12">
+        <Suspense fallback={<Skeleton className="h-32" />}>
+          <Await
+            errorElement="There was a problem loading related products"
+            resolve={recommended}
+          >
+            {(products) => (
+              <ProductSwimlane title="You May Also Like" products={products} />
+            )}
+          </Await>
+        </Suspense>
+      </div>
 
       <Analytics.ProductView
         data={{
@@ -631,333 +477,7 @@ export default function Product() {
           ],
         }}
       />
-    </>
-  );
-}
-
-
-export function ProductForm({
-  amazonUrl,
-  productOptions,
-  selectedVariant,
-  storeDomain,
-}: {
-  amazonUrl: string;
-  productOptions: MappedProductOptions[];
-  selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
-  storeDomain: string;
-}) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const [quantity, setQuantity] = useState(1);
-
-  const isOutOfStock = !selectedVariant?.availableForSale;
-
-  const isOnSale =
-    selectedVariant?.price?.amount &&
-    selectedVariant?.compareAtPrice?.amount &&
-    selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
-
-  return (
-    <div className="grid gap-7">
-      <div className="grid gap-4">
-        {productOptions.map((option, optionIndex) => (
-          <div
-            key={option.name}
-            className="product-options flex flex-col flex-wrap mb-4 gap-y-2 last:mb-0"
-          >
-            <Heading as="legend" size="lead" className="min-w-[4rem]">
-              {option.name}
-            </Heading>
-            <div className="flex flex-wrap items-baseline gap-4">
-              {option.optionValues.length > 7 ? (
-                <div className="relative w-full">
-                  <Listbox>
-                    {({open}) => (
-                      <>
-                        <Listbox.Button
-                          ref={closeRef}
-                          className={clsx(
-                            'flex items-center justify-between w-full py-3 px-4 border border-primary',
-                            open
-                              ? 'rounded-b md:rounded-t md:rounded-b-none'
-                              : 'rounded',
-                          )}
-                        >
-                          <span>
-                            {
-                              selectedVariant?.selectedOptions[optionIndex]
-                                .value
-                            }
-                          </span>
-                          <IconCaret direction={open ? 'up' : 'down'} />
-                        </Listbox.Button>
-                        <Listbox.Options
-                          className={clsx(
-                            'border-primary bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t border px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b',
-                            open ? 'max-h-48' : 'max-h-0',
-                          )}
-                        >
-                          {option.optionValues
-                            .filter((value) => value.available)
-                            .map(
-                              ({
-                                isDifferentProduct,
-                                name,
-                                variantUriQuery,
-                                handle,
-                                selected,
-                              }) => (
-                                <Listbox.Option
-                                  key={`option-${option.name}-${name}`}
-                                  value={name}
-                                >
-                                  <Link
-                                    {...(!isDifferentProduct
-                                      ? {rel: 'nofollow'}
-                                      : {})}
-                                    to={`/products/${handle}?${variantUriQuery}`}
-                                    preventScrollReset
-                                    className={clsx(
-                                      'text-primary w-full p-2 transition rounded flex justify-start items-center text-left cursor-pointer',
-                                      selected && 'bg-primary/10',
-                                    )}
-                                    onClick={() => {
-                                      if (!closeRef?.current) return;
-                                      closeRef.current.click();
-                                    }}
-                                  >
-                                    {name}
-                                    {selected && (
-                                      <span className="ml-2">
-                                        <IconCheck />
-                                      </span>
-                                    )}
-                                  </Link>
-                                </Listbox.Option>
-                              ),
-                            )}
-                        </Listbox.Options>
-                      </>
-                    )}
-                  </Listbox>
-                </div>
-              ) : (
-                option.optionValues.map(
-                  ({
-                    isDifferentProduct,
-                    name,
-                    variantUriQuery,
-                    handle,
-                    selected,
-                    available,
-                    swatch,
-                  }) => (
-                    <Link
-                      key={option.name + name}
-                      {...(!isDifferentProduct ? {rel: 'nofollow'} : {})}
-                      to={`/products/${handle}?${variantUriQuery}`}
-                      preventScrollReset
-                      prefetch="intent"
-                      replace
-                      className={clsx(
-                        'leading-none py-1 border-b-[1.5px] cursor-pointer transition-all duration-200',
-                        selected ? 'border-primary/50' : 'border-primary/0',
-                        available ? 'opacity-100' : 'opacity-50',
-                      )}
-                    >
-                      <ProductOptionSwatch swatch={swatch} name={name} />
-                    </Link>
-                  ),
-                )
-              )}
-            </div>
-          </div>
-        ))}
-        {selectedVariant && (
-          <div className="grid items-stretch gap-4">
-            <div className="luxury-quantity-row">
-              <span className="luxury-product-kicker">Quantity</span>
-              <div className="luxury-quantity-control">
-                <button
-                  type="button"
-                  aria-label="Decrease quantity"
-                  onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                >
-                  -
-                </button>
-                <span>{quantity}</span>
-                <button
-                  type="button"
-                  aria-label="Increase quantity"
-                  onClick={() => setQuantity((current) => current + 1)}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            {isOutOfStock ? (
-              <button
-                disabled
-                style={{
-                  width: '100%', padding: '1rem', textAlign: 'center',
-                  fontFamily: 'Inter, sans-serif', fontSize: '12px',
-                  fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase',
-                  background: '#e8e4de', color: '#9a9086',
-                  border: 'none', borderRadius: '2px', cursor: 'not-allowed',
-                }}
-              >
-                Sold Out
-              </button>
-            ) : (
-              <AddToCartButton
-                lines={[
-                  {
-                    merchandiseId: selectedVariant.id!,
-                    quantity,
-                  },
-                ]}
-                variant="primary"
-                className="luxury-cta"
-                data-test="add-to-cart"
-                style={{
-                  width: '100%', padding: '1rem',
-                  background: '#1a1a1a', color: '#faf9f7',
-                  fontFamily: 'Inter, sans-serif', fontSize: '12px',
-                  fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase',
-                  border: 'none', borderRadius: '2px', cursor: 'pointer',
-                  transition: 'background 0.3s ease, transform 0.2s ease',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                }}
-              >
-                <span>Add to Cart</span>
-              </AddToCartButton>
-            )}
-            {!isOutOfStock && (
-              <>
-                <AddToCartButton
-                  lines={[
-                    {
-                      merchandiseId: selectedVariant.id!,
-                      quantity,
-                    },
-                  ]}
-                  variant="secondary"
-                  className="luxury-cta luxury-cta--gold"
-                >
-                  <span>Buy Now</span>
-                </AddToCartButton>
-                <ShopPayButton
-                  width="100%"
-                  variantIds={[selectedVariant?.id!]}
-                  storeDomain={storeDomain}
-                />
-                <div className="luxury-amazon-card">
-                  <span>Available on</span>
-                  <a
-                    href={amazonUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="luxury-amazon-link"
-                  >
-                    Amazon
-                  </a>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </div>
     </div>
-  );
-}
-
-function ProductOptionSwatch({
-  swatch,
-  name,
-}: {
-  swatch?: Maybe<ProductOptionValueSwatch> | undefined;
-  name: string;
-}) {
-  const image = swatch?.image?.previewImage?.url;
-  const color = swatch?.color;
-
-  if (!image && !color) return name;
-
-  return (
-    <div
-      aria-label={name}
-      className="w-8 h-8"
-      style={{
-        backgroundColor: color || 'transparent',
-      }}
-    >
-      {!!image && <img src={image} alt={name} />}
-    </div>
-  );
-}
-
-function ProductDetail({
-  title,
-  content,
-  learnMore,
-}: {
-  title: string;
-  content: string;
-  learnMore?: string;
-}) {
-  return (
-    <Disclosure key={title} as="div" style={{borderBottom: '1px solid rgba(201,169,110,0.15)', paddingBottom: '0.5rem'}}>
-      {({open}) => (
-        <>
-          <Disclosure.Button
-            style={{
-              width: '100%', textAlign: 'left',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '0.75rem 0', background: 'none', border: 'none', cursor: 'pointer',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: '0.95rem', fontWeight: 400, color: '#1a1a1a',
-              }}
-            >
-              {title}
-            </span>
-            <IconClose
-              className={clsx(
-                'transition-transform transform-gpu duration-200',
-                !open && 'rotate-[45deg]',
-              )}
-              style={{color: '#c9a96e', flexShrink: 0}}
-            />
-          </Disclosure.Button>
-
-          <Disclosure.Panel style={{paddingBottom: '1rem'}}>
-            <div
-              className="prose"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.85rem', lineHeight: 1.7, color: '#6b6158',
-              }}
-              dangerouslySetInnerHTML={{__html: content}}
-            />
-            {learnMore && (
-              <Link
-                style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: '11px',
-                  fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
-                  color: '#c9a96e', textDecoration: 'none', display: 'inline-block', marginTop: '0.5rem',
-                }}
-                to={learnMore}
-              >
-                Learn more →
-              </Link>
-            )}
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
   );
 }
 
